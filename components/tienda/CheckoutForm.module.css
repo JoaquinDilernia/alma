@@ -1,0 +1,97 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: 1.3fr 1fr;
+  }
+}
+
+.field {
+  margin-bottom: var(--space-sm);
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-beige);
+}
+
+.error {
+  color: #b3452f;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.metodoPago {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.resumen {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  align-self: start;
+}
+
+.resumenRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+
+.resumenTotal {
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-top: 1px solid var(--color-beige);
+  padding-top: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.confirmar {
+  width: 100%;
+  background: var(--color-verde-principal);
+  color: var(--color-blanco);
+  padding: 0.9rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: var(--space-sm);
+}
+
+.confirmar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formError {
+  color: #b3452f;
+  margin-top: var(--space-sm);
+}
+
+.confirmacion {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.numeroPedido {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--color-verde-principal);
+  margin: var(--space-sm) 0;
+}
