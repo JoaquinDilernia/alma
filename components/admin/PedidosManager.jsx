@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { updateDocById } from "@/lib/adminCrud";
+import StatusBadge, { ESTADO_LABELS } from "./StatusBadge";
 import styles from "./PedidosManager.module.css";
 
 const ESTADOS = ["pendiente", "confirmado", "en_preparacion", "entregado", "cancelado"];
@@ -56,7 +57,7 @@ export default function PedidosManager() {
                 <td>{pedido.cliente?.nombre}</td>
                 <td>${pedido.total}</td>
                 <td>
-                  <span className={styles.badge}>{pedido.estado}</span>
+                  <StatusBadge estado={pedido.estado} />
                 </td>
               </tr>
               {expandedId === pedido.id && (
@@ -76,7 +77,14 @@ export default function PedidosManager() {
                       {pedido.items?.map((item) => `${item.cantidad}× ${item.nombre}`).join(", ")}
                     </p>
                     <p>
-                      <strong>Subtotal:</strong> ${pedido.subtotal} — <strong>Envío:</strong> ${pedido.costoEnvio}
+                      <strong>Subtotal:</strong> ${pedido.subtotal}
+                      {pedido.descuentoMonto > 0 && (
+                        <>
+                          {" "}
+                          — <strong>Descuento ({pedido.descuentoPorcentaje}%):</strong> -${pedido.descuentoMonto}
+                        </>
+                      )}{" "}
+                      — <strong>Envío:</strong> ${pedido.costoEnvio}
                     </p>
                     <label htmlFor={`estado-${pedido.id}`}>
                       <strong>Cambiar estado:</strong>
@@ -89,7 +97,7 @@ export default function PedidosManager() {
                     >
                       {ESTADOS.map((estado) => (
                         <option key={estado} value={estado}>
-                          {estado}
+                          {ESTADO_LABELS[estado]}
                         </option>
                       ))}
                     </select>

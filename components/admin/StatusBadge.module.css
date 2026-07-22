@@ -1,0 +1,33 @@
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pendiente {
+  background: #f5e6b8;
+  color: #8a6d1d;
+}
+
+.confirmado {
+  background: #cfe0f5;
+  color: #1d4d8a;
+}
+
+.en_preparacion {
+  background: #e2d3f5;
+  color: #5b2d8a;
+}
+
+.entregado {
+  background: #c9ead6;
+  color: #1d6b3f;
+}
+
+.cancelado {
+  background: #f5cfcf;
+  color: #8a2d2d;
+}
