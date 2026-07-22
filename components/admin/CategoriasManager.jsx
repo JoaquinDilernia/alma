@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCategorias } from "@/lib/useCategorias";
 import { createDoc, updateDocById, deleteDocById } from "@/lib/adminCrud";
-import styles from "./CategoriasManager.module.css";
+import styles from "./adminShared.module.css";
 
 const COLLECTION = "alma_categorias";
 
@@ -46,14 +46,14 @@ export default function CategoriasManager() {
         <tbody>
           {categorias.map((categoria) => (
             <tr key={categoria.id}>
-              <td>
+              <td data-label="Nombre">
                 <input
                   type="text"
                   defaultValue={categoria.nombre}
                   onBlur={(e) => handleFieldChange(categoria, "nombre", e.target.value)}
                 />
               </td>
-              <td>
+              <td data-label="Orden">
                 <input
                   type="number"
                   defaultValue={categoria.orden}
@@ -61,14 +61,14 @@ export default function CategoriasManager() {
                   style={{ width: 70 }}
                 />
               </td>
-              <td>
+              <td data-label="Activa">
                 <input
                   type="checkbox"
                   defaultChecked={categoria.activa}
                   onChange={(e) => handleFieldChange(categoria, "activa", e.target.checked)}
                 />
               </td>
-              <td className={styles.actions}>
+              <td data-label="" className={styles.actions}>
                 <button type="button" className={styles.delete} onClick={() => handleDelete(categoria)}>
                   Eliminar
                 </button>
