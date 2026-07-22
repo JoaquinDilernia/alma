@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import styles from "./Header.module.css";
 
@@ -14,14 +15,20 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const hasDarkHero = pathname === "/";
+  const [scrolled, setScrolled] = useState(!hasDarkHero);
 
   useEffect(() => {
+    if (!hasDarkHero) {
+      setScrolled(true);
+      return;
+    }
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [hasDarkHero]);
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.solid : ""}`}>
