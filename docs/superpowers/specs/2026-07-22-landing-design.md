@@ -145,7 +145,7 @@ Se agregan unit tests (Vitest) para la lógica no trivial: validación del formu
 
 ## Imágenes de producto
 
-No existen fotos reales de ALMA todavía. En vez de hardcodear fotos stock, los contenedores de imagen (hero, categorías de producto) arrancan **vacíos con un placeholder gráfico de marca** (gradiente/patrón con la paleta verde-crema y el isotipo), ya que el mecanismo real para poner imágenes es subirlas desde `/admin/contenido` a Firebase Storage — el usuario las va a ir cargando ahí a medida que consiga fotografía real, sin necesitar ningún cambio de código ni redeploy.
+No existen fotos reales de ALMA todavía. Se cargan fotos stock de calidad (estilo comida saludable/meal prep, coherente con la paleta verde/crema) como imagen inicial del hero y de cada categoría de producto, subidas directamente a Firebase Storage durante la implementación. El mecanismo real para reemplazarlas es `/admin/contenido` (sube a Storage y actualiza `alma_site_content`) — el usuario las va a ir reemplazando por fotografía propia cuando la tenga, sin necesitar ningún cambio de código ni redeploy. Como red de seguridad, si en algún momento un campo de imagen queda vacío (documento no creado todavía, fetch fallido, etc.), se muestra un placeholder gráfico de marca (gradiente con la paleta verde-crema y el isotipo) en vez de un hueco roto.
 
 ## Próximo paso
 
