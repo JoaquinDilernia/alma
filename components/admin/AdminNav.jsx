@@ -11,6 +11,10 @@ export default function AdminNav({ role }) {
       <div className={styles.links}>
         <Link href="/admin">Panel</Link>
         <Link href="/admin/contenido">Contenido</Link>
+        <Link href="/admin/productos">Productos</Link>
+        <Link href="/admin/categorias">Categorías</Link>
+        <Link href="/admin/zonas-envio">Envíos</Link>
+        <Link href="/admin/pedidos">Pedidos</Link>
         {role === "superadmin" && <Link href="/admin/usuarios">Usuarios</Link>}
       </div>
       <button type="button" className={styles.logout} onClick={() => signOut(auth)}>
