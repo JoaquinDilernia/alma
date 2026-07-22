@@ -1,0 +1,80 @@
+.form {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-beige);
+  font-family: var(--font-body);
+}
+
+.field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.fotos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.nutricion {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.save {
+  background: var(--color-verde-principal);
+  color: var(--color-blanco);
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancel {
+  background: transparent;
+  border: 1px solid var(--color-beige);
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
