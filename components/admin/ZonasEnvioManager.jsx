@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { createDoc, updateDocById, deleteDocById } from "@/lib/adminCrud";
-import styles from "./CategoriasManager.module.css";
+import styles from "./adminShared.module.css";
 
 const COLLECTION = "alma_zonas_envio";
 
@@ -46,14 +46,14 @@ export default function ZonasEnvioManager() {
         <tbody>
           {zonasEnvio.map((zona) => (
             <tr key={zona.id}>
-              <td>
+              <td data-label="Nombre">
                 <input
                   type="text"
                   defaultValue={zona.nombre}
                   onBlur={(e) => handleFieldChange(zona, "nombre", e.target.value)}
                 />
               </td>
-              <td>
+              <td data-label="Costo">
                 <input
                   type="number"
                   defaultValue={zona.costo}
@@ -61,14 +61,14 @@ export default function ZonasEnvioManager() {
                   style={{ width: 100 }}
                 />
               </td>
-              <td>
+              <td data-label="Activa">
                 <input
                   type="checkbox"
                   defaultChecked={zona.activa}
                   onChange={(e) => handleFieldChange(zona, "activa", e.target.checked)}
                 />
               </td>
-              <td className={styles.actions}>
+              <td data-label="" className={styles.actions}>
                 <button type="button" className={styles.delete} onClick={() => handleDelete(zona)}>
                   Eliminar
                 </button>
