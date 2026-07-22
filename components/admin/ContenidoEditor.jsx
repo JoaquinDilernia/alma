@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useSiteContent } from "@/lib/useSiteContent";
 import { saveSiteContentField } from "@/lib/saveSiteContentField";
 import ImageUploadField from "./ImageUploadField";
+import TestimoniosManager from "./TestimoniosManager";
+import FaqManager from "./FaqManager";
 import styles from "./ContenidoEditor.module.css";
 
 export default function ContenidoEditor() {
@@ -121,6 +123,19 @@ export default function ContenidoEditor() {
             onChange={(e) => setDraft((p) => ({ ...p, empresas: { texto: e.target.value } }))}
           />
         </div>
+      </section>
+
+      <section className={styles.block}>
+        <h2>Testimonios</h2>
+        <TestimoniosManager
+          testimonios={draft.testimonios}
+          onChange={(testimonios) => setDraft((p) => ({ ...p, testimonios }))}
+        />
+      </section>
+
+      <section className={styles.block}>
+        <h2>Preguntas frecuentes</h2>
+        <FaqManager faq={draft.faq} onChange={(faq) => setDraft((p) => ({ ...p, faq }))} />
       </section>
 
       <button type="submit" className={styles.save} disabled={saving}>
