@@ -1,0 +1,53 @@
+.empty {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.zona {
+  margin: var(--space-md) 0;
+  max-width: 320px;
+}
+
+.zona label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.zona select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-beige);
+}
+
+.totales {
+  max-width: 320px;
+  margin-left: auto;
+  margin-top: var(--space-md);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+
+.totalFinal {
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-top: 1px solid var(--color-beige);
+  padding-top: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.continuar {
+  display: block;
+  text-align: center;
+  background: var(--color-verde-principal);
+  color: var(--color-blanco);
+  padding: 0.9rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  margin-top: var(--space-md);
+}

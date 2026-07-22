@@ -1,0 +1,29 @@
+.row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-beige);
+}
+
+.nombre {
+  font-weight: 600;
+}
+
+.cantidad {
+  width: 60px;
+  padding: 0.4rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-beige);
+}
+
+.quitar {
+  background: transparent;
+  border: 1px solid #b3452f;
+  color: #b3452f;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
