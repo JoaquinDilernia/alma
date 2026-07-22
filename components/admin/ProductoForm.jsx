@@ -60,130 +60,140 @@ export default function ProductoForm({ producto, onDone }) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="producto-nombre">Nombre</label>
-          <input
-            id="producto-nombre"
-            value={draft.nombre}
-            onChange={(e) => updateField("nombre", e.target.value)}
-            required
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Datos básicos</p>
+        <div className={styles.row}>
+          <div className={styles.field}>
+            <label htmlFor="producto-nombre">Nombre</label>
+            <input
+              id="producto-nombre"
+              value={draft.nombre}
+              onChange={(e) => updateField("nombre", e.target.value)}
+              required
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="producto-precio">Precio</label>
+            <input
+              id="producto-precio"
+              type="number"
+              value={draft.precio}
+              onChange={(e) => updateField("precio", e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className={styles.field} style={{ marginBottom: "1rem" }}>
+          <label htmlFor="producto-descripcion">Descripción</label>
+          <textarea
+            id="producto-descripcion"
+            value={draft.descripcion}
+            onChange={(e) => updateField("descripcion", e.target.value)}
           />
         </div>
-        <div className={styles.field}>
-          <label htmlFor="producto-precio">Precio</label>
+
+        <div className={styles.row}>
+          <div className={styles.field}>
+            <label htmlFor="producto-categoria">Categoría</label>
+            <select
+              id="producto-categoria"
+              value={draft.categoriaId}
+              onChange={(e) => updateField("categoriaId", e.target.value)}
+              required
+            >
+              <option value="">Seleccioná una categoría</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="producto-tipo">Tipo</label>
+            <select id="producto-tipo" value={draft.tipo} onChange={(e) => updateField("tipo", e.target.value)}>
+              <option value="individual">Individual</option>
+              <option value="pack">Pack</option>
+            </select>
+          </div>
+        </div>
+
+        <div className={styles.field} style={{ maxWidth: 160 }}>
+          <label htmlFor="producto-stock">Stock</label>
           <input
-            id="producto-precio"
+            id="producto-stock"
             type="number"
-            value={draft.precio}
-            onChange={(e) => updateField("precio", e.target.value)}
-            required
+            value={draft.stock}
+            onChange={(e) => updateField("stock", e.target.value)}
           />
         </div>
       </div>
 
-      <div className={styles.field} style={{ marginBottom: "1rem" }}>
-        <label htmlFor="producto-descripcion">Descripción</label>
-        <textarea
-          id="producto-descripcion"
-          value={draft.descripcion}
-          onChange={(e) => updateField("descripcion", e.target.value)}
-        />
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="producto-categoria">Categoría</label>
-          <select
-            id="producto-categoria"
-            value={draft.categoriaId}
-            onChange={(e) => updateField("categoriaId", e.target.value)}
-            required
-          >
-            <option value="">Seleccioná una categoría</option>
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="producto-tipo">Tipo</label>
-          <select id="producto-tipo" value={draft.tipo} onChange={(e) => updateField("tipo", e.target.value)}>
-            <option value="individual">Individual</option>
-            <option value="pack">Pack</option>
-          </select>
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Fotos</p>
+        <div className={styles.fotos}>
+          {[0, 1, 2].map((index) => (
+            <ImageUploadField
+              key={index}
+              label={`Foto ${index + 1}`}
+              currentUrl={draft.imagenUrls[index]}
+              storagePath={`productos/${draft.nombre || "nuevo"}-${index}.jpg`}
+              onUploaded={(url) => updateFoto(index, url)}
+            />
+          ))}
         </div>
       </div>
 
-      <div className={styles.field} style={{ marginBottom: "1rem", maxWidth: 160 }}>
-        <label htmlFor="producto-stock">Stock</label>
-        <input
-          id="producto-stock"
-          type="number"
-          value={draft.stock}
-          onChange={(e) => updateField("stock", e.target.value)}
-        />
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Tabla nutricional (por porción)</p>
+        <div className={styles.nutricion}>
+          <div className={styles.field}>
+            <label htmlFor="nutricion-calorias">Calorías</label>
+            <input
+              id="nutricion-calorias"
+              value={draft.tablaNutricional.calorias}
+              onChange={(e) => updateNutricion("calorias", e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="nutricion-proteinas">Proteínas (g)</label>
+            <input
+              id="nutricion-proteinas"
+              value={draft.tablaNutricional.proteinas}
+              onChange={(e) => updateNutricion("proteinas", e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="nutricion-carbohidratos">Carbohidratos (g)</label>
+            <input
+              id="nutricion-carbohidratos"
+              value={draft.tablaNutricional.carbohidratos}
+              onChange={(e) => updateNutricion("carbohidratos", e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="nutricion-grasas">Grasas (g)</label>
+            <input
+              id="nutricion-grasas"
+              value={draft.tablaNutricional.grasas}
+              onChange={(e) => updateNutricion("grasas", e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
-      <p style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Fotos</p>
-      <div className={styles.fotos}>
-        {[0, 1, 2].map((index) => (
-          <ImageUploadField
-            key={index}
-            label={`Foto ${index + 1}`}
-            currentUrl={draft.imagenUrls[index]}
-            storagePath={`productos/${draft.nombre || "nuevo"}-${index}.jpg`}
-            onUploaded={(url) => updateFoto(index, url)}
-          />
-        ))}
-      </div>
-
-      <p style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Tabla nutricional (por porción)</p>
-      <div className={styles.nutricion}>
-        <div className={styles.field}>
-          <label htmlFor="nutricion-calorias">Calorías</label>
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Estado</p>
+        <div className={styles.checkboxRow}>
           <input
-            id="nutricion-calorias"
-            value={draft.tablaNutricional.calorias}
-            onChange={(e) => updateNutricion("calorias", e.target.value)}
+            id="producto-activo"
+            type="checkbox"
+            checked={draft.activo}
+            onChange={(e) => updateField("activo", e.target.checked)}
           />
+          <label htmlFor="producto-activo">Activo (visible en la tienda)</label>
         </div>
-        <div className={styles.field}>
-          <label htmlFor="nutricion-proteinas">Proteínas (g)</label>
-          <input
-            id="nutricion-proteinas"
-            value={draft.tablaNutricional.proteinas}
-            onChange={(e) => updateNutricion("proteinas", e.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="nutricion-carbohidratos">Carbohidratos (g)</label>
-          <input
-            id="nutricion-carbohidratos"
-            value={draft.tablaNutricional.carbohidratos}
-            onChange={(e) => updateNutricion("carbohidratos", e.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="nutricion-grasas">Grasas (g)</label>
-          <input
-            id="nutricion-grasas"
-            value={draft.tablaNutricional.grasas}
-            onChange={(e) => updateNutricion("grasas", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={styles.checkboxRow}>
-        <input
-          id="producto-activo"
-          type="checkbox"
-          checked={draft.activo}
-          onChange={(e) => updateField("activo", e.target.checked)}
-        />
-        <label htmlFor="producto-activo">Activo (visible en la tienda)</label>
       </div>
 
       <div className={styles.buttons}>
