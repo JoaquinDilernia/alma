@@ -1,0 +1,40 @@
+.section {
+  background: var(--color-verde-principal);
+  color: var(--color-crema);
+}
+
+.section h2 {
+  color: var(--color-blanco);
+}
+
+.badge {
+  display: inline-block;
+  background: var(--color-verde-oliva);
+  color: var(--color-blanco);
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.texto {
+  max-width: 46ch;
+  font-size: 1.1rem;
+  margin: var(--space-sm) 0;
+}

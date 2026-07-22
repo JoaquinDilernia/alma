@@ -1,0 +1,59 @@
+.form {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 420px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--color-crema);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(247, 244, 238, 0.35);
+  background: rgba(247, 244, 238, 0.08);
+  color: var(--color-blanco);
+  font-family: var(--font-body);
+}
+
+.field input::placeholder {
+  color: rgba(247, 244, 238, 0.5);
+}
+
+.error {
+  color: #e8b4a0;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.submit {
+  background: var(--color-blanco);
+  color: var(--color-verde-principal);
+  padding: 0.9rem 1.6rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: var(--space-xs);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success {
+  color: var(--color-blanco);
+  font-weight: 600;
+}
+
+.formError {
+  color: #e8b4a0;
+}
