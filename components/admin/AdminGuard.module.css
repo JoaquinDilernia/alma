@@ -1,0 +1,18 @@
+.loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-verde-principal);
+}
+
+.shell {
+  min-height: 100vh;
+  background: var(--color-crema);
+}
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+}
