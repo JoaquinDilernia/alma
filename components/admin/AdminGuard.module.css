@@ -9,10 +9,18 @@
 .shell {
   min-height: 100vh;
   background: var(--color-crema);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 960px) {
+  .shell {
+    flex-direction: row;
+  }
 }
 
 .main {
-  max-width: 960px;
-  margin: 0 auto;
+  flex: 1;
+  min-width: 0;
   padding: var(--space-lg) var(--space-md);
 }

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/useAdminAuth";
-import AdminNav from "./AdminNav";
+import AdminSidebar from "./AdminSidebar";
 import styles from "./AdminGuard.module.css";
 
 export default function AdminGuard({ children }) {
@@ -37,7 +37,7 @@ export default function AdminGuard({ children }) {
 
   return (
     <div className={styles.shell}>
-      <AdminNav role={adminDoc.role} />
+      <AdminSidebar role={adminDoc.role} userEmail={user.email} />
       <main className={styles.main}>{children}</main>
     </div>
   );
