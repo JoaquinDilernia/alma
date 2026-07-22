@@ -1,0 +1,25 @@
+.button {
+  position: fixed;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  z-index: 60;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.button:hover {
+  transform: scale(1.08);
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  fill: var(--color-blanco);
+}
