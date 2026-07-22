@@ -114,3 +114,40 @@
 .cta:hover {
   background: #24391f;
 }
+
+.hamburger {
+  display: flex;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0.4rem;
+}
+
+@media (min-width: 860px) {
+  .hamburger {
+    display: none;
+  }
+}
+
+.mobilePanel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-crema);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  gap: var(--space-xs);
+  box-shadow: 0 4px 12px rgba(46, 74, 47, 0.1);
+}
+
+.mobilePanel a {
+  padding: 0.6rem 0;
+  color: var(--color-texto);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-beige);
+}
+
+@media (min-width: 860px) {
+  .mobilePanel {
+    display: none;
+  }
+}

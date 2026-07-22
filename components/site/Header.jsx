@@ -19,6 +19,7 @@ export default function Header() {
   const pathname = usePathname();
   const hasDarkHero = pathname === "/";
   const [scrolled, setScrolled] = useState(!hasDarkHero);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!hasDarkHero) {
@@ -31,8 +32,14 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [hasDarkHero]);
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const showSolid = scrolled || mobileOpen;
+
   return (
-    <header className={`${styles.header} ${scrolled ? styles.solid : ""}`}>
+    <header className={`${styles.header} ${showSolid ? styles.solid : ""}`}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logoLink}>
           <Logo variant="isotipo" className={styles.logo} />
@@ -53,8 +60,39 @@ export default function Header() {
           <Link href="/tienda" className={styles.cta}>
             Pedir ahora
           </Link>
+          <button
+            type="button"
+            className={styles.hamburger}
+            onClick={() => setMobileOpen((prev) => !prev)}
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+          >
+            {mobileOpen ? (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+      {mobileOpen && (
+        <div className={styles.mobilePanel}>
+          {NAV_LINKS.map((link) => (
+            <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
+              {link.label}
+            </a>
+          ))}
+          <Link href="/tienda" onClick={() => setMobileOpen(false)}>
+            Tienda
+          </Link>
+        </div>
+      )}
     </header>
   );
 }
