@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import TechDiCredit from "./TechDiCredit";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -20,6 +21,7 @@ export default function Footer() {
       </div>
       <div className={`container ${styles.bottom}`}>
         <p>© {new Date().getFullYear()} ALMA — Servicios Gastronómicos. Nutrimos momentos, creamos bienestar.</p>
+        <TechDiCredit />
       </div>
     </footer>
   );

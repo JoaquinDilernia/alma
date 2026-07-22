@@ -1,0 +1,8 @@
+.credit {
+  font-size: 0.75rem;
+}
+
+.credit a {
+  color: inherit;
+  text-decoration: underline;
+}
