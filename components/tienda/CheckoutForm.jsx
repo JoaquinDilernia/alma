@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
-import { validateCheckoutForm } from "@/lib/checkout";
-import { calculateTotal } from "@/lib/checkout";
+import { useMetodosPago } from "@/lib/useMetodosPago";
+import { validateCheckoutForm, calculateTotal, calculateDiscount } from "@/lib/checkout";
 import { submitOrder } from "@/lib/submitOrder";
 import styles from "./CheckoutForm.module.css";
 
@@ -17,19 +17,24 @@ export default function CheckoutForm() {
   const zonaFromCart = searchParams.get("zona") || "";
   const { cart, subtotal, clearCart } = useCart();
   const { zonasEnvio } = useZonasEnvio();
+  const { metodosPago } = useMetodosPago();
 
   const [cliente, setCliente] = useState(INITIAL_CLIENTE);
   const [zonaEnvioId, setZonaEnvioId] = useState(zonaFromCart);
-  const [metodoPago, setMetodoPago] = useState("");
+  const [metodoPagoId, setMetodoPagoId] = useState("");
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [errorMessage, setErrorMessage] = useState("");
   const [pedidoId, setPedidoId] = useState(null);
 
   const zonasActivas = zonasEnvio.filter((z) => z.activa);
+  const metodosActivos = metodosPago.filter((m) => m.activo);
   const zonaSeleccionada = zonasActivas.find((z) => z.id === zonaEnvioId);
+  const metodoSeleccionado = metodosActivos.find((m) => m.id === metodoPagoId);
   const costoEnvio = zonaSeleccionada ? zonaSeleccionada.costo : 0;
-  const total = calculateTotal(subtotal, costoEnvio);
+  const descuentoPorcentaje = metodoSeleccionado ? metodoSeleccionado.descuentoPorcentaje : 0;
+  const descuentoMonto = calculateDiscount(subtotal, descuentoPorcentaje);
+  const total = calculateTotal(subtotal - descuentoMonto, costoEnvio);
 
   const handleChange = (field) => (event) => {
     setCliente((prev) => ({ ...prev, [field]: event.target.value }));
@@ -37,7 +42,7 @@ export default function CheckoutForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = { ...cliente, zonaEnvioId, metodoPago };
+    const data = { ...cliente, zonaEnvioId, metodoPago: metodoPagoId };
     const { valid, errors: validationErrors } = validateCheckoutForm(data);
     setErrors(validationErrors);
     if (!valid) return;
@@ -45,7 +50,14 @@ export default function CheckoutForm() {
     setStatus("submitting");
     setErrorMessage("");
     try {
-      const id = await submitOrder({ cart, cliente, zonaEnvioId, costoEnvio, metodoPago });
+      const id = await submitOrder({
+        cart,
+        cliente,
+        zonaEnvioId,
+        costoEnvio,
+        metodoPago: metodoSeleccionado.nombre,
+        descuentoPorcentaje,
+      });
       setPedidoId(id);
       setStatus("success");
       clearCart();
@@ -122,26 +134,19 @@ export default function CheckoutForm() {
         <div className={styles.field}>
           <label>Método de pago preferido</label>
           <div className={styles.metodoPago}>
-            <label>
-              <input
-                type="radio"
-                name="metodoPago"
-                value="transferencia"
-                checked={metodoPago === "transferencia"}
-                onChange={(e) => setMetodoPago(e.target.value)}
-              />{" "}
-              Transferencia
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="metodoPago"
-                value="tarjeta"
-                checked={metodoPago === "tarjeta"}
-                onChange={(e) => setMetodoPago(e.target.value)}
-              />{" "}
-              Tarjeta
-            </label>
+            {metodosActivos.map((metodo) => (
+              <label key={metodo.id}>
+                <input
+                  type="radio"
+                  name="metodoPago"
+                  value={metodo.id}
+                  checked={metodoPagoId === metodo.id}
+                  onChange={(e) => setMetodoPagoId(e.target.value)}
+                />{" "}
+                {metodo.nombre}
+                {metodo.descuentoPorcentaje > 0 ? ` (-${metodo.descuentoPorcentaje}%)` : ""}
+              </label>
+            ))}
           </div>
           {errors.metodoPago && <p className={styles.error}>{errors.metodoPago}</p>}
         </div>
@@ -157,6 +162,12 @@ export default function CheckoutForm() {
             <span>${item.precio * item.cantidad}</span>
           </div>
         ))}
+        {descuentoMonto > 0 && (
+          <div className={styles.resumenRow}>
+            <span>Descuento ({metodoSeleccionado.nombre} -{descuentoPorcentaje}%)</span>
+            <span>-${descuentoMonto}</span>
+          </div>
+        )}
         <div className={styles.resumenRow}>
           <span>Envío</span>
           <span>${costoEnvio}</span>
