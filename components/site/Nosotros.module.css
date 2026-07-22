@@ -1,0 +1,46 @@
+.wrap {
+  text-align: center;
+}
+
+.texto {
+  max-width: 60ch;
+  margin: var(--space-sm) auto var(--space-lg);
+  font-size: 1.1rem;
+}
+
+.pilares {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+@media (min-width: 760px) {
+  .pilares {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pilar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.icono {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-beige);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-verde-principal);
+  font-size: 1.5rem;
+}
+
+.pilarLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-verde-principal);
+}
