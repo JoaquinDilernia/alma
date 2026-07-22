@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
+import CartIcon from "@/components/tienda/CartIcon";
 import styles from "./Header.module.css";
 
 const NAV_LINKS = [
@@ -47,9 +48,12 @@ export default function Header() {
             Tienda
           </Link>
         </nav>
-        <Link href="/tienda" className={styles.cta}>
-          Pedir ahora
-        </Link>
+        <div className={styles.actions}>
+          <CartIcon />
+          <Link href="/tienda" className={styles.cta}>
+            Pedir ahora
+          </Link>
+        </div>
       </div>
     </header>
   );

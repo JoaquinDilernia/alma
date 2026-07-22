@@ -89,6 +89,18 @@
   opacity: 1;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-blanco);
+  transition: color 0.3s ease;
+}
+
+.solid .actions {
+  color: var(--color-texto);
+}
+
 .cta {
   background: var(--color-verde-principal);
   color: var(--color-blanco);
