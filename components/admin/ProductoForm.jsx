@@ -15,6 +15,8 @@ const EMPTY = {
   categoriaId: "",
   tipo: "individual",
   stock: 0,
+  cantidadViandas: 1,
+  guarniciones: [],
   imagenUrls: ["", "", ""],
   tablaNutricional: { calorias: "", proteinas: "", carbohidratos: "", grasas: "" },
   activo: true,
@@ -35,6 +37,16 @@ export default function ProductoForm({ producto, onDone }) {
       imagenUrls[index] = url;
       return { ...prev, imagenUrls };
     });
+  const addGuarnicion = () =>
+    setDraft((prev) => ({ ...prev, guarniciones: [...(prev.guarniciones || []), { nombre: "", precioExtra: 0 }] }));
+  const updateGuarnicion = (index, field, value) =>
+    setDraft((prev) => {
+      const guarniciones = [...prev.guarniciones];
+      guarniciones[index] = { ...guarniciones[index], [field]: value };
+      return { ...prev, guarniciones };
+    });
+  const removeGuarnicion = (index) =>
+    setDraft((prev) => ({ ...prev, guarniciones: prev.guarniciones.filter((_, i) => i !== index) }));
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,6 +55,10 @@ export default function ProductoForm({ producto, onDone }) {
       ...draft,
       precio: Number(draft.precio) || 0,
       stock: Number(draft.stock) || 0,
+      cantidadViandas: Math.max(1, Number(draft.cantidadViandas) || 1),
+      guarniciones: (draft.guarniciones || [])
+        .filter((g) => g.nombre.trim())
+        .map((g) => ({ nombre: g.nombre.trim(), precioExtra: Number(g.precioExtra) || 0 })),
       imagenUrls: draft.imagenUrls.filter(Boolean),
     };
     try {
@@ -119,14 +135,26 @@ export default function ProductoForm({ producto, onDone }) {
           </div>
         </div>
 
-        <div className={styles.field} style={{ maxWidth: 160 }}>
-          <label htmlFor="producto-stock">Stock</label>
-          <input
-            id="producto-stock"
-            type="number"
-            value={draft.stock}
-            onChange={(e) => updateField("stock", e.target.value)}
-          />
+        <div className={styles.row}>
+          <div className={styles.field}>
+            <label htmlFor="producto-stock">Stock</label>
+            <input
+              id="producto-stock"
+              type="number"
+              value={draft.stock}
+              onChange={(e) => updateField("stock", e.target.value)}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="producto-viandas">Cantidad de viandas</label>
+            <input
+              id="producto-viandas"
+              type="number"
+              min={1}
+              value={draft.cantidadViandas}
+              onChange={(e) => updateField("cantidadViandas", e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -143,6 +171,36 @@ export default function ProductoForm({ producto, onDone }) {
             />
           ))}
         </div>
+      </div>
+
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Guarniciones</p>
+        <p style={{ marginBottom: "0.8rem", opacity: 0.7, fontSize: "0.9rem" }}>
+          Si cargás guarniciones, el cliente elige una por vianda (según la cantidad de viandas). El extra suma al precio.
+        </p>
+        {(draft.guarniciones || []).map((g, index) => (
+          <div key={index} className={styles.guarnicionRow}>
+            <input
+              type="text"
+              placeholder="Nombre (ej. Puré)"
+              value={g.nombre}
+              onChange={(e) => updateGuarnicion(index, "nombre", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Extra $"
+              value={g.precioExtra}
+              onChange={(e) => updateGuarnicion(index, "precioExtra", e.target.value)}
+              style={{ width: 110 }}
+            />
+            <button type="button" className={styles.removeGuarnicion} onClick={() => removeGuarnicion(index)}>
+              Quitar
+            </button>
+          </div>
+        ))}
+        <button type="button" className={styles.addGuarnicion} onClick={addGuarnicion}>
+          + Agregar guarnición
+        </button>
       </div>
 
       <div className={styles.section}>
