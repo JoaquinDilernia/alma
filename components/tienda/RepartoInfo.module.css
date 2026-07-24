@@ -1,0 +1,23 @@
+.box {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.titulo {
+  font-weight: 700;
+  color: var(--color-verde-principal);
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.linea {
+  font-size: 0.9rem;
+  margin: 0.15rem 0;
+}
+
+.zonaNombre {
+  font-weight: 600;
+}
