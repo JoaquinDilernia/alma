@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useProductos } from "@/lib/useProductos";
 import { useCategorias } from "@/lib/useCategorias";
+import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import CategoriaFiltro from "./CategoriaFiltro";
 import ProductoCard from "./ProductoCard";
 import styles from "./Catalogo.module.css";
@@ -10,6 +11,7 @@ import styles from "./Catalogo.module.css";
 export default function Catalogo() {
   const { productos, loading: loadingProductos } = useProductos();
   const { categorias, loading: loadingCategorias } = useCategorias();
+  const { minimoViandas } = useTiendaConfig();
   const [categoriaActiva, setCategoriaActiva] = useState(null);
 
   if (loadingProductos || loadingCategorias) {
@@ -24,6 +26,9 @@ export default function Catalogo() {
 
   return (
     <div>
+      {minimoViandas > 0 && (
+        <p className={styles.minimoBanner}>Pedido mínimo: {minimoViandas} viandas</p>
+      )}
       <CategoriaFiltro categorias={categoriasActivas} activa={categoriaActiva} onChange={setCategoriaActiva} />
       {productosFiltrados.length === 0 ? (
         <p className={styles.empty}>No hay productos en esta categoría por ahora.</p>
