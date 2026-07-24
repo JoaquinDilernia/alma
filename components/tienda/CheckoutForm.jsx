@@ -6,8 +6,10 @@ import Link from "next/link";
 import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useMetodosPago } from "@/lib/useMetodosPago";
-import { validateCheckoutForm, calculateTotal, calculateDiscount } from "@/lib/checkout";
+import { useTiendaConfig } from "@/lib/useTiendaConfig";
+import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas } from "@/lib/checkout";
 import { submitOrder } from "@/lib/submitOrder";
+import RepartoInfo from "./RepartoInfo";
 import styles from "./CheckoutForm.module.css";
 
 const INITIAL_CLIENTE = { nombre: "", telefono: "", email: "", direccion: "" };
@@ -18,6 +20,7 @@ export default function CheckoutForm() {
   const { cart, subtotal, clearCart } = useCart();
   const { zonasEnvio } = useZonasEnvio();
   const { metodosPago } = useMetodosPago();
+  const { minimoViandas } = useTiendaConfig();
 
   const [cliente, setCliente] = useState(INITIAL_CLIENTE);
   const [zonaEnvioId, setZonaEnvioId] = useState(zonaFromCart);
@@ -35,6 +38,7 @@ export default function CheckoutForm() {
   const descuentoPorcentaje = metodoSeleccionado ? metodoSeleccionado.descuentoPorcentaje : 0;
   const descuentoMonto = calculateDiscount(subtotal, descuentoPorcentaje);
   const total = calculateTotal(subtotal - descuentoMonto, costoEnvio);
+  const { valid: minimoOk, faltan } = validateMinimoViandas(cart, minimoViandas);
 
   const handleChange = (field) => (event) => {
     setCliente((prev) => ({ ...prev, [field]: event.target.value }));
@@ -46,6 +50,12 @@ export default function CheckoutForm() {
     const { valid, errors: validationErrors } = validateCheckoutForm(data);
     setErrors(validationErrors);
     if (!valid) return;
+
+    if (!minimoOk) {
+      setErrorMessage(`El pedido mínimo es de ${minimoViandas} viandas. Te faltan ${faltan}.`);
+      setStatus("error");
+      return;
+    }
 
     setStatus("submitting");
     setErrorMessage("");
@@ -155,9 +165,10 @@ export default function CheckoutForm() {
       <div className={styles.resumen}>
         <h2 style={{ marginBottom: "1rem" }}>Resumen</h2>
         {cart.map((item) => (
-          <div key={item.productoId} className={styles.resumenRow}>
+          <div key={`${item.productoId}::${(item.guarniciones || []).join("|")}`} className={styles.resumenRow}>
             <span>
               {item.cantidad}× {item.nombre}
+              {(item.guarniciones || []).length > 0 ? ` (${item.guarniciones.join(", ")})` : ""}
             </span>
             <span>${item.precio * item.cantidad}</span>
           </div>
@@ -176,8 +187,9 @@ export default function CheckoutForm() {
           <span>Total</span>
           <span>${total}</span>
         </div>
-        <button type="submit" className={styles.confirmar} disabled={status === "submitting"}>
-          {status === "submitting" ? "Confirmando..." : "Confirmar pedido"}
+        {zonaSeleccionada && <RepartoInfo zona={zonaSeleccionada} />}
+        <button type="submit" className={styles.confirmar} disabled={status === "submitting" || !minimoOk}>
+          {status === "submitting" ? "Confirmando..." : minimoOk ? "Confirmar pedido" : `Faltan ${faltan} viandas`}
         </button>
         {status === "error" && <p className={styles.formError}>{errorMessage}</p>}
       </div>
