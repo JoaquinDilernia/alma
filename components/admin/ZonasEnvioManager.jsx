@@ -11,13 +11,23 @@ export default function ZonasEnvioManager() {
   const { zonasEnvio, loading } = useZonasEnvio();
   const [nombre, setNombre] = useState("");
   const [costo, setCosto] = useState(0);
+  const [dias, setDias] = useState("");
+  const [horario, setHorario] = useState("");
 
   const handleAdd = async (event) => {
     event.preventDefault();
     if (!nombre.trim()) return;
-    await createDoc(COLLECTION, { nombre: nombre.trim(), costo: Number(costo) || 0, activa: true });
+    await createDoc(COLLECTION, {
+      nombre: nombre.trim(),
+      costo: Number(costo) || 0,
+      activa: true,
+      diasReparto: dias.trim(),
+      horarioReparto: horario.trim(),
+    });
     setNombre("");
     setCosto(0);
+    setDias("");
+    setHorario("");
   };
 
   const handleFieldChange = (zona, field, value) => {
@@ -39,6 +49,8 @@ export default function ZonasEnvioManager() {
           <tr>
             <th>Nombre</th>
             <th>Costo</th>
+            <th>Días de reparto</th>
+            <th>Horario</th>
             <th>Activa</th>
             <th></th>
           </tr>
@@ -59,6 +71,22 @@ export default function ZonasEnvioManager() {
                   defaultValue={zona.costo}
                   onBlur={(e) => handleFieldChange(zona, "costo", Number(e.target.value))}
                   style={{ width: 100 }}
+                />
+              </td>
+              <td data-label="Días de reparto">
+                <input
+                  type="text"
+                  defaultValue={zona.diasReparto || ""}
+                  onBlur={(e) => handleFieldChange(zona, "diasReparto", e.target.value)}
+                  placeholder="Ej. Lunes y Jueves"
+                />
+              </td>
+              <td data-label="Horario">
+                <input
+                  type="text"
+                  defaultValue={zona.horarioReparto || ""}
+                  onBlur={(e) => handleFieldChange(zona, "horarioReparto", e.target.value)}
+                  placeholder="Ej. 9 a 18 hs"
                 />
               </td>
               <td data-label="Activa">
@@ -92,6 +120,14 @@ export default function ZonasEnvioManager() {
             onChange={(e) => setCosto(e.target.value)}
             style={{ width: 100 }}
           />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="nueva-zona-dias">Días de reparto</label>
+          <input id="nueva-zona-dias" value={dias} onChange={(e) => setDias(e.target.value)} placeholder="Ej. Lunes y Jueves" />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="nueva-zona-horario">Horario</label>
+          <input id="nueva-zona-horario" value={horario} onChange={(e) => setHorario(e.target.value)} placeholder="Ej. 9 a 18 hs" />
         </div>
         <button type="submit" className={styles.addButton}>
           + Agregar
