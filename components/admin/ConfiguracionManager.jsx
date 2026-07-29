@@ -5,6 +5,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import shared from "./adminShared.module.css";
+import styles from "./ConfiguracionManager.module.css";
 
 export default function ConfiguracionManager() {
   const config = useTiendaConfig();
@@ -37,20 +38,25 @@ export default function ConfiguracionManager() {
   return (
     <div>
       <h1 style={{ marginBottom: "1.5rem" }}>Configuración de la tienda</h1>
-      <form className={shared.addForm} onSubmit={handleSave}>
-        <div className={shared.field}>
-          <label htmlFor="minimo-viandas">Mínimo de viandas por pedido</label>
-          <input
-            id="minimo-viandas"
-            type="number"
-            min={0}
-            value={minimo}
-            onChange={(e) => setMinimo(e.target.value)}
-            style={{ width: 120 }}
-          />
+      <form onSubmit={handleSave}>
+        <div className={styles.section}>
+          <p className={styles.sectionTitle}>Pedido mínimo</p>
+          <div className={shared.field} style={{ maxWidth: 200 }}>
+            <label htmlFor="minimo-viandas">Mínimo de viandas por pedido</label>
+            <input
+              id="minimo-viandas"
+              type="number"
+              min={0}
+              value={minimo}
+              onChange={(e) => setMinimo(e.target.value)}
+            />
+          </div>
+          <p className={styles.hint}>0 = sin mínimo. Se muestra en el catálogo y bloquea el checkout hasta alcanzarlo.</p>
         </div>
-        <div className={shared.field} style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-          <label htmlFor="envio-gratis-activo" style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+
+        <div className={styles.section}>
+          <p className={styles.sectionTitle}>Envío gratis</p>
+          <label htmlFor="envio-gratis-activo" className={styles.toggleRow}>
             <input
               id="envio-gratis-activo"
               type="checkbox"
@@ -59,30 +65,27 @@ export default function ConfiguracionManager() {
             />
             Activar envío gratis
           </label>
+          <div className={shared.field} style={{ maxWidth: 200 }}>
+            <label htmlFor="envio-gratis-desde">A partir de (viandas)</label>
+            <input
+              id="envio-gratis-desde"
+              type="number"
+              min={0}
+              value={envioGratisDesde}
+              onChange={(e) => setEnvioGratisDesde(e.target.value)}
+              disabled={!envioGratisActivo}
+            />
+          </div>
+          <p className={styles.hint}>
+            Con el switch activado, el costo de envío pasa a $0 cuando el pedido alcanza la cantidad de viandas indicada.
+          </p>
         </div>
-        <div className={shared.field}>
-          <label htmlFor="envio-gratis-desde">A partir de (viandas)</label>
-          <input
-            id="envio-gratis-desde"
-            type="number"
-            min={0}
-            value={envioGratisDesde}
-            onChange={(e) => setEnvioGratisDesde(e.target.value)}
-            disabled={!envioGratisActivo}
-            style={{ width: 120 }}
-          />
-        </div>
+
         <button type="submit" className={shared.addButton}>
           {status === "saving" ? "Guardando..." : "Guardar"}
         </button>
       </form>
       {status === "saved" && <p style={{ marginTop: "1rem", color: "var(--color-verde-oliva)", fontWeight: 600 }}>Guardado ✓</p>}
-      <p style={{ marginTop: "1rem", color: "var(--color-texto)", opacity: 0.7 }}>
-        0 = sin mínimo. Se muestra en el catálogo y bloquea el checkout hasta alcanzarlo.
-      </p>
-      <p style={{ marginTop: "0.3rem", color: "var(--color-texto)", opacity: 0.7 }}>
-        Envío gratis: con el switch activado, el costo de envío pasa a $0 cuando el pedido alcanza la cantidad de viandas indicada.
-      </p>
     </div>
   );
 }
