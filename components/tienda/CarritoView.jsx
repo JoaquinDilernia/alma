@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
-import { calculateTotal, validateMinimoViandas } from "@/lib/checkout";
+import { calculateTotal, validateMinimoViandas, resolveEnvioGratis } from "@/lib/checkout";
 import CarritoItem from "./CarritoItem";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CarritoView.module.css";
@@ -13,7 +13,8 @@ import styles from "./CarritoView.module.css";
 export default function CarritoView() {
   const { cart, subtotal, viandaCount } = useCart();
   const { zonasEnvio, loading } = useZonasEnvio();
-  const { minimoViandas } = useTiendaConfig();
+  const config = useTiendaConfig();
+  const { minimoViandas } = config;
   const [zonaId, setZonaId] = useState("");
 
   const zonasActivas = zonasEnvio.filter((z) => z.activa);
@@ -37,7 +38,9 @@ export default function CarritoView() {
   }
 
   const zonaSeleccionada = zonasActivas.find((z) => z.id === zonaId);
-  const costoEnvio = zonaSeleccionada ? zonaSeleccionada.costo : 0;
+  const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
+  const { aplica: envioGratisAplica, faltan: envioGratisFaltan } = resolveEnvioGratis(cart, config);
+  const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
   const total = calculateTotal(subtotal, costoEnvio);
   const { valid: minimoOk, faltan } = validateMinimoViandas(cart, minimoViandas);
   const progreso = minimoViandas > 0 ? Math.min(100, Math.round((viandaCount / minimoViandas) * 100)) : 100;
@@ -55,6 +58,14 @@ export default function CarritoView() {
             <div className={styles.barraFill} style={{ width: `${progreso}%` }} />
           </div>
         </div>
+      )}
+
+      {config.envioGratisActivo && config.envioGratisDesde > 0 && (
+        <p className={envioGratisAplica ? styles.listo : styles.faltan}>
+          {envioGratisAplica
+            ? "¡Envío gratis! 🎉"
+            : `Te faltan ${envioGratisFaltan} vianda${envioGratisFaltan === 1 ? "" : "s"} para envío gratis`}
+        </p>
       )}
 
       {cart.map((item) => (
@@ -85,7 +96,7 @@ export default function CarritoView() {
         </div>
         <div className={styles.totalRow}>
           <span>Envío</span>
-          <span>${costoEnvio}</span>
+          <span>{envioGratisAplica ? "Gratis" : `$${costoEnvio}`}</span>
         </div>
         <div className={`${styles.totalRow} ${styles.totalFinal}`}>
           <span>Total</span>
