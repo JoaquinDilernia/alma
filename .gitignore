@@ -27,3 +27,5 @@ firebase-debug.log
 
 # Vitest
 *.timestamp-*.mjs
+
+.superpowers/
