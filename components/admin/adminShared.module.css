@@ -61,18 +61,19 @@
   flex-wrap: wrap;
 }
 
-.addForm .field label {
+.field label {
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 0.2rem;
 }
 
-.addForm input,
-.addForm select {
+.field input,
+.field select {
   padding: 0.5rem 0.7rem;
   border-radius: var(--radius);
   border: 1px solid var(--color-beige);
+  font-family: var(--font-body);
 }
 
 .addButton {
