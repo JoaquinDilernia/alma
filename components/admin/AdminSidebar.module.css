@@ -95,6 +95,21 @@
   display: flex;
 }
 
+.badge {
+  margin-left: auto;
+  background: #c0392b;
+  color: var(--color-blanco);
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.35rem;
+}
+
 .footer {
   padding: var(--space-md);
   border-top: 1px solid rgba(247, 244, 238, 0.15);

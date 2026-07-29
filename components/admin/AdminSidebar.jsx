@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { usePedidos } from "@/lib/usePedidos";
 import Logo from "@/components/site/Logo";
 import TechDiCredit from "@/components/site/TechDiCredit";
 import styles from "./AdminSidebar.module.css";
@@ -102,6 +103,7 @@ const ICONS = {
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Panel", icon: ICONS.panel },
+  { href: "/admin/pedidos", label: "Pedidos", icon: ICONS.pedidos },
   { href: "/admin/contenido", label: "Contenido", icon: ICONS.contenido },
   { href: "/admin/productos", label: "Productos", icon: ICONS.productos },
   { href: "/admin/categorias", label: "Categorías", icon: ICONS.categorias },
@@ -109,7 +111,6 @@ const NAV_ITEMS = [
   { href: "/admin/zonas-envio", label: "Envíos", icon: ICONS.envios },
   { href: "/admin/metodos-pago", label: "Métodos de pago", icon: ICONS.metodosPago },
   { href: "/admin/configuracion", label: "Configuración", icon: ICONS.config },
-  { href: "/admin/pedidos", label: "Pedidos", icon: ICONS.pedidos },
 ];
 
 const USUARIOS_ITEM = { href: "/admin/usuarios", label: "Usuarios", icon: ICONS.usuarios };
@@ -117,6 +118,15 @@ const USUARIOS_ITEM = { href: "/admin/usuarios", label: "Usuarios", icon: ICONS.
 export default function AdminSidebar({ role, userEmail }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { pedidos } = usePedidos();
+  const pendienteCount = pedidos.filter((p) => p.estado === "pendiente").length;
+
+  useEffect(() => {
+    document.title =
+      pendienteCount > 0
+        ? `(${pendienteCount}) ALMA — Viandas saludables 100% caseras`
+        : "ALMA — Viandas saludables 100% caseras";
+  }, [pendienteCount]);
 
   const items = role === "superadmin" ? [...NAV_ITEMS, USUARIOS_ITEM] : NAV_ITEMS;
 
@@ -153,6 +163,9 @@ export default function AdminSidebar({ role, userEmail }) {
             >
               <span className={styles.icon}>{item.icon}</span>
               {item.label}
+              {item.href === "/admin/pedidos" && pendienteCount > 0 && (
+                <span className={styles.badge}>{pendienteCount}</span>
+              )}
             </Link>
           ))}
         </nav>
