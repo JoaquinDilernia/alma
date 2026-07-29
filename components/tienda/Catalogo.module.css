@@ -25,3 +25,13 @@
   text-align: center;
   margin-bottom: var(--space-md);
 }
+
+.envioGratisBanner {
+  background: var(--color-verde-oliva);
+  color: var(--color-blanco);
+  padding: 0.6rem var(--space-md);
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--space-md);
+}

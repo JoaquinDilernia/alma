@@ -11,7 +11,7 @@ import styles from "./Catalogo.module.css";
 export default function Catalogo() {
   const { productos, loading: loadingProductos } = useProductos();
   const { categorias, loading: loadingCategorias } = useCategorias();
-  const { minimoViandas } = useTiendaConfig();
+  const { minimoViandas, envioGratisActivo, envioGratisDesde } = useTiendaConfig();
   const [categoriaActiva, setCategoriaActiva] = useState(null);
 
   if (loadingProductos || loadingCategorias) {
@@ -28,6 +28,9 @@ export default function Catalogo() {
     <div>
       {minimoViandas > 0 && (
         <p className={styles.minimoBanner}>Pedido mínimo: {minimoViandas} viandas</p>
+      )}
+      {envioGratisActivo && envioGratisDesde > 0 && (
+        <p className={styles.envioGratisBanner}>Envío gratis a partir de {envioGratisDesde} viandas</p>
       )}
       <CategoriaFiltro categorias={categoriasActivas} activa={categoriaActiva} onChange={setCategoriaActiva} />
       {productosFiltrados.length === 0 ? (
