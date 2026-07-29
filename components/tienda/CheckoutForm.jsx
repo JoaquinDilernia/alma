@@ -148,16 +148,22 @@ export default function CheckoutForm() {
           <label>Método de pago preferido</label>
           <div className={styles.metodoPago}>
             {metodosActivos.map((metodo) => (
-              <label key={metodo.id}>
+              <label
+                key={metodo.id}
+                className={`${styles.metodoCard} ${metodoPagoId === metodo.id ? styles.metodoCardActivo : ""}`}
+              >
                 <input
                   type="radio"
                   name="metodoPago"
                   value={metodo.id}
                   checked={metodoPagoId === metodo.id}
                   onChange={(e) => setMetodoPagoId(e.target.value)}
-                />{" "}
-                {metodo.nombre}
-                {metodo.descuentoPorcentaje > 0 ? ` (-${metodo.descuentoPorcentaje}%)` : ""}
+                  className={styles.metodoRadio}
+                />
+                <span className={styles.metodoNombre}>{metodo.nombre}</span>
+                {metodo.descuentoPorcentaje > 0 && (
+                  <span className={styles.metodoDescuento}>-{metodo.descuentoPorcentaje}%</span>
+                )}
               </label>
             ))}
           </div>
