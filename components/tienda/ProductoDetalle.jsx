@@ -5,10 +5,12 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useProductos } from "@/lib/useProductos";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
+import { useGuarniciones } from "@/lib/useGuarniciones";
 import { useCart } from "@/lib/CartProvider";
 import GaleriaFotos from "./GaleriaFotos";
 import TablaNutricional from "./TablaNutricional";
 import RepartoInfo from "./RepartoInfo";
+import GuarnicionPicker from "./GuarnicionPicker";
 import styles from "./ProductoDetalle.module.css";
 
 export default function ProductoDetalle() {
@@ -16,6 +18,7 @@ export default function ProductoDetalle() {
   const id = searchParams.get("id");
   const { productos, loading } = useProductos();
   const { zonasEnvio } = useZonasEnvio();
+  const { guarniciones: catalogoGuarniciones } = useGuarniciones();
   const { addToCart } = useCart();
   const [cantidad, setCantidad] = useState(1);
   const [guarniciones, setGuarniciones] = useState([]);
@@ -38,10 +41,10 @@ export default function ProductoDetalle() {
   }
 
   const sinStock = producto.stock <= 0;
-  const opciones = producto.guarniciones || [];
+  const idsGuarniciones = producto.guarniciones || [];
+  const opciones = catalogoGuarniciones.filter((g) => g.activa && idsGuarniciones.includes(g.id));
   const tieneGuarniciones = opciones.length > 0;
   const cantidadViandas = producto.cantidadViandas || 1;
-  const slots = tieneGuarniciones ? Array.from({ length: cantidadViandas }) : [];
 
   const todasElegidas = !tieneGuarniciones || (guarniciones.length === cantidadViandas && guarniciones.every(Boolean));
 
@@ -77,28 +80,7 @@ export default function ProductoDetalle() {
             <p className={styles.descripcion}>{producto.descripcion}</p>
 
             {tieneGuarniciones && !sinStock && (
-              <div className={styles.guarniciones}>
-                {slots.map((_, index) => (
-                  <div key={index} className={styles.guarnicionField}>
-                    <label htmlFor={`guarnicion-${index}`}>
-                      {cantidadViandas > 1 ? `Guarnición ${index + 1}` : "Guarnición"}
-                    </label>
-                    <select
-                      id={`guarnicion-${index}`}
-                      value={guarniciones[index] || ""}
-                      onChange={(e) => setSlot(index, e.target.value)}
-                    >
-                      <option value="">Elegí una guarnición</option>
-                      {opciones.map((o) => (
-                        <option key={o.nombre} value={o.nombre}>
-                          {o.nombre}
-                          {o.precioExtra > 0 ? ` (+$${o.precioExtra})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </div>
+              <GuarnicionPicker slots={cantidadViandas} opciones={opciones} value={guarniciones} onChange={setSlot} />
             )}
 
             {sinStock ? (
