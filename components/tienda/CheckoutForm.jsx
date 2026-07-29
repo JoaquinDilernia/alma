@@ -7,7 +7,7 @@ import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useMetodosPago } from "@/lib/useMetodosPago";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
-import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas } from "@/lib/checkout";
+import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis } from "@/lib/checkout";
 import { submitOrder } from "@/lib/submitOrder";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CheckoutForm.module.css";
@@ -20,7 +20,8 @@ export default function CheckoutForm() {
   const { cart, subtotal, clearCart } = useCart();
   const { zonasEnvio } = useZonasEnvio();
   const { metodosPago } = useMetodosPago();
-  const { minimoViandas } = useTiendaConfig();
+  const config = useTiendaConfig();
+  const { minimoViandas } = config;
 
   const [cliente, setCliente] = useState(INITIAL_CLIENTE);
   const [zonaEnvioId, setZonaEnvioId] = useState(zonaFromCart);
@@ -34,7 +35,9 @@ export default function CheckoutForm() {
   const metodosActivos = metodosPago.filter((m) => m.activo);
   const zonaSeleccionada = zonasActivas.find((z) => z.id === zonaEnvioId);
   const metodoSeleccionado = metodosActivos.find((m) => m.id === metodoPagoId);
-  const costoEnvio = zonaSeleccionada ? zonaSeleccionada.costo : 0;
+  const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
+  const { aplica: envioGratisAplica } = resolveEnvioGratis(cart, config);
+  const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
   const descuentoPorcentaje = metodoSeleccionado ? metodoSeleccionado.descuentoPorcentaje : 0;
   const descuentoMonto = calculateDiscount(subtotal, descuentoPorcentaje);
   const total = calculateTotal(subtotal - descuentoMonto, costoEnvio);
@@ -181,7 +184,7 @@ export default function CheckoutForm() {
         )}
         <div className={styles.resumenRow}>
           <span>Envío</span>
-          <span>${costoEnvio}</span>
+          <span>{envioGratisAplica ? "Gratis" : `$${costoEnvio}`}</span>
         </div>
         <div className={`${styles.resumenRow} ${styles.resumenTotal}`}>
           <span>Total</span>
