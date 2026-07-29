@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useMetodosPago } from "@/lib/useMetodosPago";
 import { createDoc, updateDocById, deleteDocById } from "@/lib/adminCrud";
-import styles from "./adminShared.module.css";
+import shared from "./adminShared.module.css";
+import styles from "./MetodosPagoManager.module.css";
 
 const COLLECTION = "alma_metodos_pago";
 
@@ -41,57 +42,49 @@ export default function MetodosPagoManager() {
         El % de descuento se aplica sobre el subtotal de productos en el checkout (no sobre el envío).
       </p>
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descuento</th>
-            <th>Activo</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {metodosPago.map((metodo) => (
-            <tr key={metodo.id}>
-              <td data-label="Nombre">
-                <input
-                  type="text"
-                  defaultValue={metodo.nombre}
-                  onBlur={(e) => handleFieldChange(metodo, "nombre", e.target.value)}
-                />
-              </td>
-              <td data-label="Descuento">
-                <input
-                  type="number"
-                  defaultValue={metodo.descuentoPorcentaje}
-                  onBlur={(e) => handleFieldChange(metodo, "descuentoPorcentaje", Number(e.target.value))}
-                  style={{ width: 80 }}
-                />
-                %
-              </td>
-              <td data-label="Activo">
-                <input
-                  type="checkbox"
-                  defaultChecked={metodo.activo}
-                  onChange={(e) => handleFieldChange(metodo, "activo", e.target.checked)}
-                />
-              </td>
-              <td data-label="" className={styles.actions}>
-                <button type="button" className={styles.delete} onClick={() => handleDelete(metodo)}>
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className={styles.list}>
+        {metodosPago.map((metodo) => (
+          <div key={metodo.id} className={styles.card}>
+            <div className={shared.field}>
+              <label htmlFor={`nombre-${metodo.id}`}>Nombre</label>
+              <input
+                id={`nombre-${metodo.id}`}
+                type="text"
+                defaultValue={metodo.nombre}
+                onBlur={(e) => handleFieldChange(metodo, "nombre", e.target.value)}
+              />
+            </div>
+            <div className={shared.field} style={{ maxWidth: 140 }}>
+              <label htmlFor={`descuento-${metodo.id}`}>Descuento %</label>
+              <input
+                id={`descuento-${metodo.id}`}
+                type="number"
+                defaultValue={metodo.descuentoPorcentaje}
+                onBlur={(e) => handleFieldChange(metodo, "descuentoPorcentaje", Number(e.target.value))}
+              />
+            </div>
+            {metodo.descuentoPorcentaje > 0 && <span className={styles.badge}>-{metodo.descuentoPorcentaje}%</span>}
+            <label className={styles.activaRow}>
+              <input
+                type="checkbox"
+                defaultChecked={metodo.activo}
+                onChange={(e) => handleFieldChange(metodo, "activo", e.target.checked)}
+              />
+              Activo
+            </label>
+            <button type="button" className={shared.delete} onClick={() => handleDelete(metodo)}>
+              Eliminar
+            </button>
+          </div>
+        ))}
+      </div>
 
-      <form className={styles.addForm} onSubmit={handleAdd}>
-        <div className={styles.field}>
+      <form className={shared.addForm} onSubmit={handleAdd}>
+        <div className={shared.field}>
           <label htmlFor="nuevo-metodo-nombre">Nuevo método</label>
           <input id="nuevo-metodo-nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </div>
-        <div className={styles.field}>
+        <div className={shared.field}>
           <label htmlFor="nuevo-metodo-descuento">Descuento %</label>
           <input
             id="nuevo-metodo-descuento"
@@ -101,7 +94,7 @@ export default function MetodosPagoManager() {
             style={{ width: 80 }}
           />
         </div>
-        <button type="submit" className={styles.addButton}>
+        <button type="submit" className={shared.addButton}>
           + Agregar
         </button>
       </form>
