@@ -5,6 +5,7 @@ import { doc, collection, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useCategorias } from "@/lib/useCategorias";
 import { updateDocById } from "@/lib/adminCrud";
+import { useGuarniciones } from "@/lib/useGuarniciones";
 import ImageUploadField from "./ImageUploadField";
 import styles from "./ProductoForm.module.css";
 
@@ -24,6 +25,7 @@ const EMPTY = {
 
 export default function ProductoForm({ producto, onDone }) {
   const { categorias } = useCategorias();
+  const { guarniciones: guarnicionesDisponibles } = useGuarniciones();
   const [draft, setDraft] = useState(producto ? { ...EMPTY, ...producto } : EMPTY);
   const [saving, setSaving] = useState(false);
   const isEditing = Boolean(producto);
@@ -37,16 +39,14 @@ export default function ProductoForm({ producto, onDone }) {
       imagenUrls[index] = url;
       return { ...prev, imagenUrls };
     });
-  const addGuarnicion = () =>
-    setDraft((prev) => ({ ...prev, guarniciones: [...(prev.guarniciones || []), { nombre: "", precioExtra: 0 }] }));
-  const updateGuarnicion = (index, field, value) =>
+  const toggleGuarnicion = (id) =>
     setDraft((prev) => {
-      const guarniciones = [...prev.guarniciones];
-      guarniciones[index] = { ...guarniciones[index], [field]: value };
+      const seleccionadas = prev.guarniciones || [];
+      const guarniciones = seleccionadas.includes(id)
+        ? seleccionadas.filter((g) => g !== id)
+        : [...seleccionadas, id];
       return { ...prev, guarniciones };
     });
-  const removeGuarnicion = (index) =>
-    setDraft((prev) => ({ ...prev, guarniciones: prev.guarniciones.filter((_, i) => i !== index) }));
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,9 +56,7 @@ export default function ProductoForm({ producto, onDone }) {
       precio: Number(draft.precio) || 0,
       stock: Number(draft.stock) || 0,
       cantidadViandas: Math.max(1, Number(draft.cantidadViandas) || 1),
-      guarniciones: (draft.guarniciones || [])
-        .filter((g) => g.nombre.trim())
-        .map((g) => ({ nombre: g.nombre.trim(), precioExtra: Number(g.precioExtra) || 0 })),
+      guarniciones: draft.guarniciones || [],
       imagenUrls: draft.imagenUrls.filter(Boolean),
     };
     try {
@@ -176,31 +174,35 @@ export default function ProductoForm({ producto, onDone }) {
       <div className={styles.section}>
         <p className={styles.sectionTitle}>Guarniciones</p>
         <p style={{ marginBottom: "0.8rem", opacity: 0.7, fontSize: "0.9rem" }}>
-          Si cargás guarniciones, el cliente elige una por vianda (según la cantidad de viandas). El extra suma al precio.
+          Elegí qué guarniciones de la lista global ofrece este producto. El cliente elige una por vianda (según la cantidad de viandas).
         </p>
-        {(draft.guarniciones || []).map((g, index) => (
-          <div key={index} className={styles.guarnicionRow}>
-            <input
-              type="text"
-              placeholder="Nombre (ej. Puré)"
-              value={g.nombre}
-              onChange={(e) => updateGuarnicion(index, "nombre", e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Extra $"
-              value={g.precioExtra}
-              onChange={(e) => updateGuarnicion(index, "precioExtra", e.target.value)}
-              style={{ width: 110 }}
-            />
-            <button type="button" className={styles.removeGuarnicion} onClick={() => removeGuarnicion(index)}>
-              Quitar
-            </button>
+        {guarnicionesDisponibles.filter((g) => g.activa).length === 0 ? (
+          <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>
+            Todavía no hay guarniciones cargadas. Creálas en la sección "Guarniciones" del menú.
+          </p>
+        ) : (
+          <div className={styles.guarnicionesCheckboxes}>
+            {guarnicionesDisponibles
+              .filter((g) => g.activa)
+              .map((g) => (
+                <label key={g.id} className={styles.guarnicionCheckbox}>
+                  <input
+                    type="checkbox"
+                    checked={(draft.guarniciones || []).includes(g.id)}
+                    onChange={() => toggleGuarnicion(g.id)}
+                  />
+                  {g.imagenUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={g.imagenUrl} alt="" className={styles.guarnicionThumb} />
+                  )}
+                  <span>
+                    {g.nombre}
+                    {g.precioExtra > 0 ? ` (+$${g.precioExtra})` : ""}
+                  </span>
+                </label>
+              ))}
           </div>
-        ))}
-        <button type="button" className={styles.addGuarnicion} onClick={addGuarnicion}>
-          + Agregar guarnición
-        </button>
+        )}
       </div>
 
       <div className={styles.section}>
