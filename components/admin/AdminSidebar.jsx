@@ -34,6 +34,14 @@ const ICONS = {
       <circle cx="7.5" cy="7.5" r="1.5" />
     </svg>
   ),
+  guarniciones: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 11h18" />
+      <path d="M4 11a8 8 0 0 0 16 0" />
+      <path d="M12 11V4" />
+      <path d="M9 4h6" />
+    </svg>
+  ),
   envios: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="1" y="6" width="14" height="11" rx="1" />
@@ -97,6 +105,7 @@ const NAV_ITEMS = [
   { href: "/admin/contenido", label: "Contenido", icon: ICONS.contenido },
   { href: "/admin/productos", label: "Productos", icon: ICONS.productos },
   { href: "/admin/categorias", label: "Categorías", icon: ICONS.categorias },
+  { href: "/admin/guarniciones", label: "Guarniciones", icon: ICONS.guarniciones },
   { href: "/admin/zonas-envio", label: "Envíos", icon: ICONS.envios },
   { href: "/admin/metodos-pago", label: "Métodos de pago", icon: ICONS.metodosPago },
   { href: "/admin/configuracion", label: "Configuración", icon: ICONS.config },

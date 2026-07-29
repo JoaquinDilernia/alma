@@ -29,6 +29,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /alma_guarniciones/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /alma_zonas_envio/{document} {
       allow read: if true;
       allow write: if isAdmin();
