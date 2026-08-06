@@ -1,3 +1,4 @@
+import StructuredData from "@/components/site/StructuredData";
 import Hero from "@/components/site/Hero";
 import Nosotros from "@/components/site/Nosotros";
 import Producto from "@/components/site/Producto";
@@ -37,6 +38,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <>
+      <StructuredData />
       <Hero />
       <Nosotros />
       <Producto />
