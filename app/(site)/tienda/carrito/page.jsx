@@ -2,6 +2,7 @@ import CarritoView from "@/components/tienda/CarritoView";
 
 export const metadata = {
   title: "Carrito",
+  robots: { index: false, follow: false },
 };
 
 export default function CarritoPage() {
