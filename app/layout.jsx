@@ -16,6 +16,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://alma.techdi.com.ar"),
   title: {
     default: "ALMA — Viandas saludables 100% caseras",
     template: "%s | ALMA",
@@ -26,7 +27,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${montserrat.variable}`}>
+    <html lang="es-AR" className={`${cormorant.variable} ${montserrat.variable}`}>
       <body>{children}</body>
     </html>
   );
