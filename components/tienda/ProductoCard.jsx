@@ -21,6 +21,7 @@ export default function ProductoCard({ producto }) {
       <span className={`${styles.badge} ${sinStock ? styles.badgeSinStock : ""}`}>
         {producto.tipo === "pack" ? "Pack" : sinStock ? "Sin stock" : "Individual"}
       </span>
+      {producto.sinTacc && <span className={styles.badgeTacc}>Sin TACC</span>}
       <div className={styles.info}>
         <p className={styles.nombre}>{producto.nombre}</p>
         <p className={styles.precio}>${producto.precio}</p>
