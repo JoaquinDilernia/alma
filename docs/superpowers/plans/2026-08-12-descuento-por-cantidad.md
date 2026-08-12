@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Same constraints as the previous feature: static export (no API routes), no separate dev/staging Firebase project — never submit a real checkout order during automated verification.
-- `firestore.rules` is local-only and never auto-deployed automatically by tooling other than the explicit `firebase deploy --only firestore:rules --project pedidos-lett-2` command run in this session — but this time, **after deploying, re-verify read access on every known collection, not just the new one** (lesson from this session's `alma_metodos_pago` incident, where the local rules file was missing a rule for a collection already in production use).
+- `firestore.rules` is local-only and **must never be deployed via CLI from this repo, ever.** `pedidos-lett-2` is a shared Firebase project with other apps' data; this repo's local rules file only knows about ALMA's own collections. A `firebase deploy --only firestore:rules` run earlier this session overwrote the entire live ruleset and broke every other app connected to the project — the user restored it manually from the Firebase console's rules history. From now on, any rules change is committed locally for documentation purposes only, and handed to the user as an exact snippet to paste into the console themselves.
 - Follow existing conventions: pure logic in `lib/checkout.js` with matching tests in `lib/checkout.test.js`; admin list-CRUD screens mirror `MetodosPagoManager.jsx` exactly (inline-edit via `onBlur` + `updateDocById`, `createDoc` for new rows, `deleteDocById` for removal).
 - `descuentoMonto` and `descuentoPorcentaje` on `alma_pedidos` keep their current meaning (combined total discount amount; payment-method percentage) so the already-shipped email/admin code that reads them keeps working unmodified where possible.
 
@@ -35,12 +35,14 @@ Add, right after the `alma_metodos_pago` block:
     }
 ```
 
-- [ ] **Step 2: Commit (do not deploy yet — deployed together with full verification in Task 10)**
+- [ ] **Step 2: Commit (local documentation only — do NOT run any `firebase deploy` command)**
 
 ```bash
 git add firestore.rules
-git commit -m "chore: Firestore rule for alma_descuentos_cantidad"
+git commit -m "chore: Firestore rule for alma_descuentos_cantidad (local only, manual paste in console)"
 ```
+
+This collection won't be readable/writable in production until the user pastes this exact block into the Firebase console themselves (Firestore → Rules, add it alongside the existing rules, Publish). Hand them the snippet from Step 1 directly when this task is reached — don't wait until Task 10 to mention it.
 
 ---
 
@@ -1019,13 +1021,9 @@ Expected: PASS. Count = previous total (91) + 6 (`resolveDescuentoCantidad`) + 2
 Run: `npm run build` (skip `rm -rf .next` if it's locked by a running dev server — that's fine, `next build` overwrites it)
 Expected: succeeds, routes include `/admin/descuentos-cantidad`.
 
-- [ ] **Step 3: Deploy the Firestore rule and re-verify ALL collections**
+- [ ] **Step 3: Confirm the user has pasted the rule in the console (no CLI deploy — ever)**
 
-```bash
-npx firebase deploy --only firestore:rules --project pedidos-lett-2
-```
-
-Then write a throwaway script (same approach used earlier this session — a `.mjs` file placed temporarily inside the ALMA project root so Node's module resolution finds the local `firebase` package, deleted immediately after) that calls `getDocs` against **every** known collection: `alma_metodos_pago`, `alma_zonas_envio`, `alma_config`, `alma_contadores`, `alma_categorias`, `alma_guarniciones`, `alma_productos`, `alma_site_content`, `alma_descuentos_cantidad`. Confirm every single one returns `OK read`, not `permission-denied`, before considering this step done — this full-collection check is required specifically because of this session's `alma_metodos_pago` incident, not just a check on the newly-added collection.
+Do NOT run `firebase deploy` for any reason. Confirm with the user that they've pasted the `alma_descuentos_cantidad` block (from Task 1) into the Firebase console themselves and published it. Once they confirm, write a throwaway script (a `.mjs` file placed temporarily inside the ALMA project root so Node's module resolution finds the local `firebase` package, deleted immediately after) that calls `getDocs` against **every** known collection: `alma_metodos_pago`, `alma_zonas_envio`, `alma_config`, `alma_contadores`, `alma_categorias`, `alma_guarniciones`, `alma_productos`, `alma_site_content`, `alma_descuentos_cantidad`. Confirm every single one returns `OK read`, not `permission-denied` — this is a read-only check (never write) and only serves to confirm the paste worked as expected.
 
 - [ ] **Step 4: Manual QA (dev server) — stop short of a real order**
 
