@@ -136,7 +136,7 @@ La pantalla de confirmación (línea 92 actual: `#{pedidoId.slice(0, 8).toUpperC
 ## Testing
 
 - **Unit (Vitest)** en `lib/emailNotifications.test.js`: `buildOrderEmailParams` — con descuento, sin descuento, con envío gratis (costo 0), con guarniciones en los ítems, sin guarniciones.
-- **Manual — contador y numeración:** correr `npm run dev`, hacer un pedido de prueba visualmente hasta el paso previo a "Confirmar pedido" y confirmar ahí (ver nota de abajo), verificar en el admin que `numeroPedido` aparece y se incrementa en pedidos sucesivos.
+- **Manual — contador y numeración:** correr `npm run dev` y verificar visualmente el checkout (formulario, resumen, totales) sin llegar a tocar "Confirmar pedido". La única forma de probar el contador de verdad (`numeroPedido` incrementando) es confirmar un pedido real, lo que escribe en la base compartida — no se hace de forma automática; se le pregunta al dueño en el momento si quiere hacerlo él mismo (y marcarlo "cancelado" después) o confiar en la revisión de código.
 - **Manual — email:** dado que no hay ambiente de prueba separado (proyecto Firebase compartido con producción — ver nota de abajo), se recomienda probar el template de EmailJS de forma aislada primero: un botón o snippet temporal que llame a `sendOrderConfirmationEmail` con datos de prueba hardcodeados, **sin pasar por el checkout real**, para no generar un pedido falso en `alma_pedidos`. Recién cuando el template esté validado así, hacer como mucho una confirmación real de pedido para el test end-to-end completo, avisando que quedará un pedido real en la base (se puede marcar "cancelado" después desde el admin).
 
 ## Retrocompatibilidad
