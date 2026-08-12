@@ -90,6 +90,7 @@ export default function CheckoutForm() {
           subtotal,
           descuentoCantidadPorcentaje,
           descuentoCantidadMonto,
+          descuentoMetodoPagoMonto,
           descuentoMonto,
           descuentoPorcentaje,
           costoEnvio,
