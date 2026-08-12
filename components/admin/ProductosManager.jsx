@@ -56,6 +56,7 @@ export default function ProductosManager() {
             <th>Precio</th>
             <th>Stock</th>
             <th>Activo</th>
+            <th>Sin TACC</th>
             <th></th>
           </tr>
         </thead>
@@ -82,6 +83,7 @@ export default function ProductosManager() {
                 </div>
               </td>
               <td data-label="Activo">{producto.activo ? "Sí" : "No"}</td>
+              <td data-label="Sin TACC">{producto.sinTacc ? "Sí" : "No"}</td>
               <td data-label="" className={shared.actions}>
                 <button type="button" className={shared.edit} onClick={() => setEditing(producto)}>
                   Editar

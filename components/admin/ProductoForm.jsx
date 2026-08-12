@@ -21,6 +21,7 @@ const EMPTY = {
   imagenUrls: ["", "", ""],
   tablaNutricional: { calorias: "", proteinas: "", carbohidratos: "", grasas: "" },
   activo: true,
+  sinTacc: false,
 };
 
 export default function ProductoForm({ producto, onDone }) {
@@ -253,6 +254,15 @@ export default function ProductoForm({ producto, onDone }) {
             onChange={(e) => updateField("activo", e.target.checked)}
           />
           <label htmlFor="producto-activo">Activo (visible en la tienda)</label>
+        </div>
+        <div className={styles.checkboxRow}>
+          <input
+            id="producto-sin-tacc"
+            type="checkbox"
+            checked={draft.sinTacc}
+            onChange={(e) => updateField("sinTacc", e.target.checked)}
+          />
+          <label htmlFor="producto-sin-tacc">Sin TACC</label>
         </div>
       </div>
 
