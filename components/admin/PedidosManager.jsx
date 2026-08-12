@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { updateDocById } from "@/lib/adminCrud";
 import StatusBadge, { ESTADO_LABELS } from "./StatusBadge";
 import styles from "./PedidosManager.module.css";
+import shared from "./adminShared.module.css";
 
 const ESTADOS = ["pendiente", "confirmado", "en_preparacion", "entregado", "cancelado"];
 
@@ -13,6 +14,7 @@ export default function PedidosManager() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     const q = query(collection(db, "alma_pedidos"), orderBy("createdAt", "desc"));
@@ -34,11 +36,26 @@ export default function PedidosManager() {
     updateDocById("alma_pedidos", pedido.id, { estado });
   };
 
+  const pedidosFiltrados = busqueda.trim()
+    ? pedidos.filter((pedido) => String(pedido.numeroPedido ?? "").includes(busqueda.trim()))
+    : pedidos;
+
   if (loading) return <p>Cargando…</p>;
 
   return (
     <div>
       <h1 style={{ marginBottom: "1.5rem" }}>Pedidos</h1>
+
+      <div className={shared.field} style={{ marginBottom: "1rem", maxWidth: "240px" }}>
+        <label htmlFor="busquedaPedido">Buscar por número de pedido</label>
+        <input
+          id="busquedaPedido"
+          type="text"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Ej: 12"
+        />
+      </div>
 
       <table className={styles.table}>
         <thead>
@@ -50,10 +67,10 @@ export default function PedidosManager() {
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((pedido) => (
+          {pedidosFiltrados.map((pedido) => (
             <Fragment key={pedido.id}>
               <tr className={styles.row} onClick={() => setExpandedId(expandedId === pedido.id ? null : pedido.id)}>
-                <td>{pedido.id.slice(0, 8).toUpperCase()}</td>
+                <td>{pedido.numeroPedido ? `#${pedido.numeroPedido}` : "—"}</td>
                 <td>{pedido.cliente?.nombre}</td>
                 <td>${pedido.total}</td>
                 <td>
