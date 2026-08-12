@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
-import { calculateTotal, validateMinimoViandas, resolveEnvioGratis } from "@/lib/checkout";
+import { calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
+import { useDescuentosCantidad } from "@/lib/useDescuentosCantidad";
 import CarritoItem from "./CarritoItem";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CarritoView.module.css";
@@ -15,6 +16,7 @@ export default function CarritoView() {
   const { zonasEnvio, loading } = useZonasEnvio();
   const config = useTiendaConfig();
   const { minimoViandas } = config;
+  const { escalones } = useDescuentosCantidad();
   const [zonaId, setZonaId] = useState("");
 
   const zonasActivas = zonasEnvio.filter((z) => z.activa);
@@ -41,7 +43,9 @@ export default function CarritoView() {
   const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
   const { aplica: envioGratisAplica, faltan: envioGratisFaltan } = resolveEnvioGratis(cart, config);
   const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
-  const total = calculateTotal(subtotal, costoEnvio);
+  const { porcentaje: descuentoCantidadPorcentaje, siguientePorcentaje, faltanParaSiguiente } = resolveDescuentoCantidad(cart, escalones);
+  const descuentoCantidadMonto = calculateDiscount(subtotal, descuentoCantidadPorcentaje);
+  const total = calculateTotal(subtotal - descuentoCantidadMonto, costoEnvio);
   const { valid: minimoOk, faltan } = validateMinimoViandas(cart, minimoViandas);
   const progreso = minimoViandas > 0 ? Math.min(100, Math.round((viandaCount / minimoViandas) * 100)) : 100;
 
@@ -65,6 +69,18 @@ export default function CarritoView() {
           {envioGratisAplica
             ? "¡Envío gratis! 🎉"
             : `Te faltan ${envioGratisFaltan} vianda${envioGratisFaltan === 1 ? "" : "s"} para envío gratis`}
+        </p>
+      )}
+
+      {escalones.some((e) => e.activo) && (
+        <p className={descuentoCantidadPorcentaje > 0 ? styles.listo : styles.faltan}>
+          {descuentoCantidadPorcentaje > 0
+            ? `¡Descuento por cantidad: ${descuentoCantidadPorcentaje}%!${
+                faltanParaSiguiente > 0
+                  ? ` Te faltan ${faltanParaSiguiente} vianda${faltanParaSiguiente === 1 ? "" : "s"} más para ${siguientePorcentaje}%.`
+                  : ""
+              }`
+            : `Te faltan ${faltanParaSiguiente} vianda${faltanParaSiguiente === 1 ? "" : "s"} para ${siguientePorcentaje}% de descuento`}
         </p>
       )}
 
@@ -94,6 +110,12 @@ export default function CarritoView() {
           <span>Subtotal</span>
           <span>${subtotal}</span>
         </div>
+        {descuentoCantidadMonto > 0 && (
+          <div className={styles.totalRow}>
+            <span>Descuento por cantidad ({descuentoCantidadPorcentaje}%)</span>
+            <span>-${descuentoCantidadMonto}</span>
+          </div>
+        )}
         <div className={styles.totalRow}>
           <span>Envío</span>
           <span>{envioGratisAplica ? "Gratis" : `$${costoEnvio}`}</span>
