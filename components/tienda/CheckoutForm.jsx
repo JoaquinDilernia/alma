@@ -9,6 +9,7 @@ import { useMetodosPago } from "@/lib/useMetodosPago";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis } from "@/lib/checkout";
 import { submitOrder } from "@/lib/submitOrder";
+import { buildOrderEmailParams, sendOrderConfirmationEmail } from "@/lib/emailNotifications";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CheckoutForm.module.css";
 
@@ -30,6 +31,7 @@ export default function CheckoutForm() {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [errorMessage, setErrorMessage] = useState("");
   const [pedidoId, setPedidoId] = useState(null);
+  const [numeroPedido, setNumeroPedido] = useState(null);
 
   const zonasActivas = zonasEnvio.filter((z) => z.activa);
   const metodosActivos = metodosPago.filter((m) => m.activo);
@@ -63,7 +65,7 @@ export default function CheckoutForm() {
     setStatus("submitting");
     setErrorMessage("");
     try {
-      const id = await submitOrder({
+      const { pedidoId: id, numeroPedido: numero } = await submitOrder({
         cart,
         cliente,
         zonaEnvioId,
@@ -72,8 +74,26 @@ export default function CheckoutForm() {
         descuentoPorcentaje,
       });
       setPedidoId(id);
+      setNumeroPedido(numero);
       setStatus("success");
       clearCart();
+
+      try {
+        const emailParams = buildOrderEmailParams({
+          cliente,
+          items: cart,
+          subtotal,
+          descuentoMonto,
+          descuentoPorcentaje,
+          costoEnvio,
+          total,
+          metodoPagoElegido: metodoSeleccionado.nombre,
+          numeroPedido: numero,
+        });
+        await sendOrderConfirmationEmail(emailParams);
+      } catch (emailErr) {
+        console.error("No se pudo enviar el mail de confirmación:", emailErr);
+      }
     } catch (err) {
       const message = String(err?.message || "");
       if (message.startsWith("STOCK_INSUFICIENTE:")) {
@@ -89,7 +109,7 @@ export default function CheckoutForm() {
     return (
       <div className={styles.confirmacion}>
         <p className="sectionLabel">Pedido confirmado</p>
-        <p className={styles.numeroPedido}>#{pedidoId.slice(0, 8).toUpperCase()}</p>
+        <p className={styles.numeroPedido}>#{numeroPedido}</p>
         <p>Recibimos tu pedido. Te vamos a contactar para coordinar el pago y la entrega.</p>
         <Link href="/tienda" style={{ fontWeight: 600, textDecoration: "underline", display: "inline-block", marginTop: "1rem" }}>
           Volver a la tienda
