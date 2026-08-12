@@ -10,6 +10,19 @@
   }
 }
 
+.badgeTacc {
+  display: inline-block;
+  margin-left: var(--space-xs);
+  background: var(--color-verde-oliva);
+  color: var(--color-blanco);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .precio {
   font-size: 1.5rem;
   font-weight: 700;

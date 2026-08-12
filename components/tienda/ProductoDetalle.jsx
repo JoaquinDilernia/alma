@@ -74,7 +74,10 @@ export default function ProductoDetalle() {
         <div className={styles.grid}>
           <GaleriaFotos imagenUrls={producto.imagenUrls} nombre={producto.nombre} />
           <div>
-            <p className="sectionLabel">{producto.tipo === "pack" ? "Pack" : "Individual"}</p>
+            <p className="sectionLabel">
+              {producto.tipo === "pack" ? "Pack" : "Individual"}
+              {producto.sinTacc && <span className={styles.badgeTacc}>Sin TACC</span>}
+            </p>
             <h1>{producto.nombre}</h1>
             <p className={styles.precio}>${precioEfectivo}</p>
             <p className={styles.descripcion}>{producto.descripcion}</p>
