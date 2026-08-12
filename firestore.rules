@@ -39,6 +39,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /alma_metodos_pago/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /alma_config/{document} {
       allow read: if true;
       allow write: if isAdmin();
