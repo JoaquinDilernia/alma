@@ -8,7 +8,6 @@ import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useMetodosPago } from "@/lib/useMetodosPago";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
-import { useDescuentosCantidad } from "@/lib/useDescuentosCantidad";
 import { submitOrder } from "@/lib/submitOrder";
 import { buildOrderEmailParams, sendOrderConfirmationEmail } from "@/lib/emailNotifications";
 import RepartoInfo from "./RepartoInfo";
@@ -23,8 +22,7 @@ export default function CheckoutForm() {
   const { zonasEnvio } = useZonasEnvio();
   const { metodosPago } = useMetodosPago();
   const config = useTiendaConfig();
-  const { minimoViandas } = config;
-  const { escalones } = useDescuentosCantidad();
+  const { minimoViandas, descuentosCantidad } = config;
 
   const [cliente, setCliente] = useState(INITIAL_CLIENTE);
   const [zonaEnvioId, setZonaEnvioId] = useState(zonaFromCart);
@@ -42,7 +40,7 @@ export default function CheckoutForm() {
   const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
   const { aplica: envioGratisAplica } = resolveEnvioGratis(cart, config);
   const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
-  const { porcentaje: descuentoCantidadPorcentaje } = resolveDescuentoCantidad(cart, escalones);
+  const { porcentaje: descuentoCantidadPorcentaje } = resolveDescuentoCantidad(cart, descuentosCantidad);
   const descuentoCantidadMonto = calculateDiscount(subtotal, descuentoCantidadPorcentaje);
   const subtotalPostCantidad = subtotal - descuentoCantidadMonto;
   const descuentoPorcentaje = metodoSeleccionado ? metodoSeleccionado.descuentoPorcentaje : 0;

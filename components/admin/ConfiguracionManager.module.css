@@ -21,6 +21,14 @@
   font-weight: 600;
 }
 
+.escalonRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}
+
 .hint {
   margin-top: var(--space-sm);
   color: var(--color-texto);

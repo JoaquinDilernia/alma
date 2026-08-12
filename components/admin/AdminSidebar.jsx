@@ -57,13 +57,6 @@ const ICONS = {
       <line x1="2" y1="10" x2="22" y2="10" />
     </svg>
   ),
-  descuentos: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="19" y1="5" x2="5" y2="19" />
-      <circle cx="6.5" cy="6.5" r="2.5" />
-      <circle cx="17.5" cy="17.5" r="2.5" />
-    </svg>
-  ),
   config: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
@@ -117,7 +110,6 @@ const NAV_ITEMS = [
   { href: "/admin/guarniciones", label: "Guarniciones", icon: ICONS.guarniciones },
   { href: "/admin/zonas-envio", label: "Envíos", icon: ICONS.envios },
   { href: "/admin/metodos-pago", label: "Métodos de pago", icon: ICONS.metodosPago },
-  { href: "/admin/descuentos-cantidad", label: "Descuentos por cantidad", icon: ICONS.descuentos },
   { href: "/admin/configuracion", label: "Configuración", icon: ICONS.config },
 ];
 

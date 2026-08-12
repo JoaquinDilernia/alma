@@ -6,7 +6,6 @@ import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import { calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
-import { useDescuentosCantidad } from "@/lib/useDescuentosCantidad";
 import CarritoItem from "./CarritoItem";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CarritoView.module.css";
@@ -15,8 +14,7 @@ export default function CarritoView() {
   const { cart, subtotal, viandaCount } = useCart();
   const { zonasEnvio, loading } = useZonasEnvio();
   const config = useTiendaConfig();
-  const { minimoViandas } = config;
-  const { escalones } = useDescuentosCantidad();
+  const { minimoViandas, descuentosCantidad } = config;
   const [zonaId, setZonaId] = useState("");
 
   const zonasActivas = zonasEnvio.filter((z) => z.activa);
@@ -43,7 +41,7 @@ export default function CarritoView() {
   const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
   const { aplica: envioGratisAplica, faltan: envioGratisFaltan } = resolveEnvioGratis(cart, config);
   const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
-  const { porcentaje: descuentoCantidadPorcentaje, siguientePorcentaje, faltanParaSiguiente } = resolveDescuentoCantidad(cart, escalones);
+  const { porcentaje: descuentoCantidadPorcentaje, siguientePorcentaje, faltanParaSiguiente } = resolveDescuentoCantidad(cart, descuentosCantidad);
   const descuentoCantidadMonto = calculateDiscount(subtotal, descuentoCantidadPorcentaje);
   const total = calculateTotal(subtotal - descuentoCantidadMonto, costoEnvio);
   const { valid: minimoOk, faltan } = validateMinimoViandas(cart, minimoViandas);
@@ -72,7 +70,7 @@ export default function CarritoView() {
         </p>
       )}
 
-      {escalones.some((e) => e.activo) && (
+      {descuentosCantidad.some((e) => e.activo) && (
         <p className={descuentoCantidadPorcentaje > 0 ? styles.listo : styles.faltan}>
           {descuentoCantidadPorcentaje > 0
             ? `¡Descuento por cantidad: ${descuentoCantidadPorcentaje}%!${

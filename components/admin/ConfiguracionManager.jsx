@@ -12,13 +12,27 @@ export default function ConfiguracionManager() {
   const [minimo, setMinimo] = useState("");
   const [envioGratisActivo, setEnvioGratisActivo] = useState(false);
   const [envioGratisDesde, setEnvioGratisDesde] = useState("");
+  const [descuentosCantidad, setDescuentosCantidad] = useState([]);
   const [status, setStatus] = useState("idle");
 
   useEffect(() => {
     setMinimo(String(config.minimoViandas));
     setEnvioGratisActivo(config.envioGratisActivo);
     setEnvioGratisDesde(String(config.envioGratisDesde));
-  }, [config.minimoViandas, config.envioGratisActivo, config.envioGratisDesde]);
+    setDescuentosCantidad(config.descuentosCantidad);
+  }, [config.minimoViandas, config.envioGratisActivo, config.envioGratisDesde, config.descuentosCantidad]);
+
+  const updateEscalon = (index, field, value) => {
+    setDescuentosCantidad((prev) => prev.map((e, i) => (i === index ? { ...e, [field]: value } : e)));
+  };
+
+  const removeEscalon = (index) => {
+    setDescuentosCantidad((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addEscalon = () => {
+    setDescuentosCantidad((prev) => [...prev, { cantidadMinima: 0, porcentaje: 0, activo: true }]);
+  };
 
   const handleSave = async (event) => {
     event.preventDefault();
@@ -29,6 +43,11 @@ export default function ConfiguracionManager() {
         minimoViandas: Number(minimo) || 0,
         envioGratisActivo: !!envioGratisActivo,
         envioGratisDesde: Number(envioGratisDesde) || 0,
+        descuentosCantidad: descuentosCantidad.map((e) => ({
+          cantidadMinima: Number(e.cantidadMinima) || 0,
+          porcentaje: Number(e.porcentaje) || 0,
+          activo: !!e.activo,
+        })),
       },
       { merge: true }
     );
@@ -79,6 +98,52 @@ export default function ConfiguracionManager() {
           <p className={styles.hint}>
             Con el switch activado, el costo de envío pasa a $0 cuando el pedido alcanza la cantidad de viandas indicada.
           </p>
+        </div>
+
+        <div className={styles.section}>
+          <p className={styles.sectionTitle}>Descuento por cantidad</p>
+          <p className={styles.hint} style={{ marginBottom: "var(--space-sm)", marginTop: 0 }}>
+            Se aplica el escalón activo más alto que el pedido alcance, sobre el subtotal — antes del descuento por
+            método de pago, no sumado a él.
+          </p>
+          {descuentosCantidad.map((escalon, index) => (
+            <div key={index} className={styles.escalonRow}>
+              <div className={shared.field} style={{ maxWidth: 140 }}>
+                <label htmlFor={`escalon-cantidad-${index}`}>Viandas mínimas</label>
+                <input
+                  id={`escalon-cantidad-${index}`}
+                  type="number"
+                  min={0}
+                  value={escalon.cantidadMinima}
+                  onChange={(e) => updateEscalon(index, "cantidadMinima", e.target.value)}
+                />
+              </div>
+              <div className={shared.field} style={{ maxWidth: 120 }}>
+                <label htmlFor={`escalon-porcentaje-${index}`}>Descuento %</label>
+                <input
+                  id={`escalon-porcentaje-${index}`}
+                  type="number"
+                  min={0}
+                  value={escalon.porcentaje}
+                  onChange={(e) => updateEscalon(index, "porcentaje", e.target.value)}
+                />
+              </div>
+              <label className={styles.toggleRow}>
+                <input
+                  type="checkbox"
+                  checked={escalon.activo}
+                  onChange={(e) => updateEscalon(index, "activo", e.target.checked)}
+                />
+                Activo
+              </label>
+              <button type="button" className={shared.delete} onClick={() => removeEscalon(index)}>
+                Eliminar
+              </button>
+            </div>
+          ))}
+          <button type="button" className={shared.edit} onClick={addEscalon}>
+            + Agregar escalón
+          </button>
         </div>
 
         <button type="submit" className={shared.addButton}>
