@@ -95,10 +95,18 @@ export default function PedidosManager() {
                     </p>
                     <p>
                       <strong>Subtotal:</strong> ${pedido.subtotal}
-                      {pedido.descuentoMonto > 0 && (
+                      {pedido.descuentoCantidadMonto > 0 && (
                         <>
                           {" "}
-                          — <strong>Descuento ({pedido.descuentoPorcentaje}%):</strong> -${pedido.descuentoMonto}
+                          — <strong>Descuento por cantidad ({pedido.descuentoCantidadPorcentaje}%):</strong> -$
+                          {pedido.descuentoCantidadMonto}
+                        </>
+                      )}
+                      {(pedido.descuentoMetodoPagoMonto ?? pedido.descuentoMonto) > 0 && (
+                        <>
+                          {" "}
+                          — <strong>Descuento método de pago ({pedido.descuentoPorcentaje}%):</strong> -$
+                          {pedido.descuentoMetodoPagoMonto ?? pedido.descuentoMonto}
                         </>
                       )}{" "}
                       — <strong>Envío:</strong> ${pedido.costoEnvio}
