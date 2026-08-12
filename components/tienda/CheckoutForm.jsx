@@ -7,7 +7,8 @@ import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useMetodosPago } from "@/lib/useMetodosPago";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
-import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis } from "@/lib/checkout";
+import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
+import { useDescuentosCantidad } from "@/lib/useDescuentosCantidad";
 import { submitOrder } from "@/lib/submitOrder";
 import { buildOrderEmailParams, sendOrderConfirmationEmail } from "@/lib/emailNotifications";
 import RepartoInfo from "./RepartoInfo";
@@ -23,6 +24,7 @@ export default function CheckoutForm() {
   const { metodosPago } = useMetodosPago();
   const config = useTiendaConfig();
   const { minimoViandas } = config;
+  const { escalones } = useDescuentosCantidad();
 
   const [cliente, setCliente] = useState(INITIAL_CLIENTE);
   const [zonaEnvioId, setZonaEnvioId] = useState(zonaFromCart);
@@ -40,8 +42,12 @@ export default function CheckoutForm() {
   const costoEnvioBase = zonaSeleccionada ? zonaSeleccionada.costo : 0;
   const { aplica: envioGratisAplica } = resolveEnvioGratis(cart, config);
   const costoEnvio = envioGratisAplica ? 0 : costoEnvioBase;
+  const { porcentaje: descuentoCantidadPorcentaje } = resolveDescuentoCantidad(cart, escalones);
+  const descuentoCantidadMonto = calculateDiscount(subtotal, descuentoCantidadPorcentaje);
+  const subtotalPostCantidad = subtotal - descuentoCantidadMonto;
   const descuentoPorcentaje = metodoSeleccionado ? metodoSeleccionado.descuentoPorcentaje : 0;
-  const descuentoMonto = calculateDiscount(subtotal, descuentoPorcentaje);
+  const descuentoMetodoPagoMonto = calculateDiscount(subtotalPostCantidad, descuentoPorcentaje);
+  const descuentoMonto = descuentoCantidadMonto + descuentoMetodoPagoMonto;
   const total = calculateTotal(subtotal - descuentoMonto, costoEnvio);
   const { valid: minimoOk, faltan } = validateMinimoViandas(cart, minimoViandas);
 
@@ -72,6 +78,7 @@ export default function CheckoutForm() {
         costoEnvio,
         metodoPago: metodoSeleccionado.nombre,
         descuentoPorcentaje,
+        descuentoCantidadPorcentaje,
       });
       setPedidoId(id);
       setNumeroPedido(numero);
@@ -83,6 +90,8 @@ export default function CheckoutForm() {
           cliente,
           items: cart,
           subtotal,
+          descuentoCantidadPorcentaje,
+          descuentoCantidadMonto,
           descuentoMonto,
           descuentoPorcentaje,
           costoEnvio,
@@ -202,10 +211,16 @@ export default function CheckoutForm() {
             <span>${item.precio * item.cantidad}</span>
           </div>
         ))}
-        {descuentoMonto > 0 && (
+        {descuentoCantidadMonto > 0 && (
           <div className={styles.resumenRow}>
-            <span>Descuento ({metodoSeleccionado.nombre} -{descuentoPorcentaje}%)</span>
-            <span>-${descuentoMonto}</span>
+            <span>Descuento por cantidad ({descuentoCantidadPorcentaje}%)</span>
+            <span>-${descuentoCantidadMonto}</span>
+          </div>
+        )}
+        {descuentoMetodoPagoMonto > 0 && (
+          <div className={styles.resumenRow}>
+            <span>Descuento método de pago ({metodoSeleccionado.nombre} -{descuentoPorcentaje}%)</span>
+            <span>-${descuentoMetodoPagoMonto}</span>
           </div>
         )}
         <div className={styles.resumenRow}>
