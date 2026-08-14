@@ -80,5 +80,12 @@ service cloud.firestore {
         && request.resource.data.ultimoNumero == resource.data.ultimoNumero + 1;
       allow delete: if false;
     }
+
+    // Everything that is NOT an "alma_" collection (20+ other landing pages/apps
+    // sharing this same Firebase project) keeps behaving exactly as it does today —
+    // unrestricted — so this change does not affect them at all.
+    match /{collection}/{document=**} {
+      allow read, write: if !collection.matches('^alma_.*');
+    }
   }
 }
