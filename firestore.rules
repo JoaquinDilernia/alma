@@ -34,6 +34,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /alma_platos_principales/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /alma_zonas_envio/{document} {
       allow read: if true;
       allow write: if isAdmin();
