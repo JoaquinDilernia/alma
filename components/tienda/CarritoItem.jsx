@@ -15,6 +15,9 @@ export default function CarritoItem({ item }) {
       <div className={styles.info}>
         <span className={styles.nombre}>{item.nombre}</span>
         {item.gramos && <span className={styles.guarniciones}>{formatGramos(item.gramos)}</span>}
+        {(item.platosPrincipales || []).length > 0 && (
+          <span className={styles.guarniciones}>{item.platosPrincipales.join(", ")}</span>
+        )}
         {guarniciones.length > 0 && <span className={styles.guarniciones}>{guarniciones.join(", ")}</span>}
       </div>
       <span>${item.precio}</span>

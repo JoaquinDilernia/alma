@@ -93,7 +93,11 @@ export default function PedidosManager() {
                     <p>
                       <strong>Ítems:</strong>{" "}
                       {pedido.items
-                        ?.map((item) => `${item.cantidad}× ${item.nombre}${item.gramos ? ` (${formatGramos(item.gramos)})` : ""}`)
+                        ?.map((item) => {
+                          const gramos = item.gramos ? ` (${formatGramos(item.gramos)})` : "";
+                          const platos = (item.platosPrincipales || []).length ? ` [${item.platosPrincipales.join(", ")}]` : "";
+                          return `${item.cantidad}× ${item.nombre}${gramos}${platos}`;
+                        })
                         .join(", ")}
                     </p>
                     <p>

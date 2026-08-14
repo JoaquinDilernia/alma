@@ -208,6 +208,7 @@ export default function CheckoutForm() {
             <span>
               {item.cantidad}× {item.nombre}
               {item.gramos ? ` (${formatGramos(item.gramos)})` : ""}
+              {(item.platosPrincipales || []).length > 0 ? ` — ${item.platosPrincipales.join(", ")}` : ""}
               {(item.guarniciones || []).length > 0 ? ` — ${item.guarniciones.join(", ")}` : ""}
             </span>
             <span>${item.precio * item.cantidad}</span>
