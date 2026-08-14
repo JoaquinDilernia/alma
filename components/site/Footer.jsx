@@ -12,10 +12,10 @@ export default function Footer() {
           <span className={styles.wordmark}>ALMA</span>
         </div>
         <nav className={styles.links}>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#producto">Producto</a>
-          <a href="#empresas">Empresas</a>
-          <a href="#faq">FAQ</a>
+          <Link href="/#nosotros">Nosotros</Link>
+          <Link href="/#producto">Producto</Link>
+          <Link href="/#empresas">Empresas</Link>
+          <Link href="/#faq">FAQ</Link>
           <Link href="/tienda">Tienda</Link>
         </nav>
       </div>

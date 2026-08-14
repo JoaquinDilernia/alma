@@ -8,11 +8,11 @@ import CartIcon from "@/components/tienda/CartIcon";
 import styles from "./Header.module.css";
 
 const NAV_LINKS = [
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#producto", label: "Producto" },
-  { href: "#empresas", label: "Empresas" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "/#nosotros", label: "Nosotros" },
+  { href: "/#producto", label: "Producto" },
+  { href: "/#empresas", label: "Empresas" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/#contacto", label: "Contacto" },
 ];
 
 export default function Header() {
@@ -47,9 +47,9 @@ export default function Header() {
         </Link>
         <nav className={styles.nav}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className={styles.navLink}>
+            <Link key={link.href} href={link.href} className={styles.navLink}>
               {link.label}
-            </a>
+            </Link>
           ))}
           <Link href="/tienda" className={styles.navLink}>
             Tienda
@@ -84,9 +84,9 @@ export default function Header() {
       {mobileOpen && (
         <div className={styles.mobilePanel}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
+            <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
               {link.label}
-            </a>
+            </Link>
           ))}
           <Link href="/tienda" onClick={() => setMobileOpen(false)}>
             Tienda
