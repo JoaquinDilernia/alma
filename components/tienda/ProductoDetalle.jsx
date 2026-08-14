@@ -11,6 +11,8 @@ import GaleriaFotos from "./GaleriaFotos";
 import TablaNutricional from "./TablaNutricional";
 import RepartoInfo from "./RepartoInfo";
 import GuarnicionPicker from "./GuarnicionPicker";
+import SeleccionMultiple from "./SeleccionMultiple";
+import { usePlatosPrincipales } from "@/lib/usePlatosPrincipales";
 import { resolveOpcionesGramaje, formatGramos } from "@/lib/gramaje";
 import styles from "./ProductoDetalle.module.css";
 
@@ -20,9 +22,11 @@ export default function ProductoDetalle() {
   const { productos, loading } = useProductos();
   const { zonasEnvio } = useZonasEnvio();
   const { guarniciones: catalogoGuarniciones } = useGuarniciones();
+  const { platosPrincipales: catalogoPlatos } = usePlatosPrincipales();
   const { addToCart } = useCart();
   const [cantidad, setCantidad] = useState(1);
   const [guarniciones, setGuarniciones] = useState([]);
+  const [platosPrincipales, setPlatosPrincipales] = useState([]);
   const [agregado, setAgregado] = useState(false);
   const [gramajeSeleccionado, setGramajeSeleccionado] = useState(null);
 
@@ -49,13 +53,23 @@ export default function ProductoDetalle() {
   const cantidadViandas = producto.cantidadViandas || 1;
   const opcionesGramaje = resolveOpcionesGramaje(producto);
   const gramajeActivo = gramajeSeleccionado || opcionesGramaje[0] || null;
+  const idsPlatosPrincipales = producto.platosPrincipales || [];
+  const opcionesPlatos = catalogoPlatos.filter((p) => p.activa && idsPlatosPrincipales.includes(p.id));
+  const esPackArmable = opcionesPlatos.length > 0;
 
-  const todasElegidas = !tieneGuarniciones || (guarniciones.length === cantidadViandas && guarniciones.every(Boolean));
+  const todasElegidas =
+    (!tieneGuarniciones || (guarniciones.length === cantidadViandas && guarniciones.every(Boolean))) &&
+    (!esPackArmable || platosPrincipales.length === cantidadViandas);
 
-  const extras = guarniciones.reduce((sum, nombre) => {
+  const extrasGuarniciones = guarniciones.reduce((sum, nombre) => {
     const g = opciones.find((o) => o.nombre === nombre);
     return sum + (g ? Number(g.precioExtra) || 0 : 0);
   }, 0);
+  const extrasPlatos = platosPrincipales.reduce((sum, nombre) => {
+    const p = opcionesPlatos.find((o) => o.nombre === nombre);
+    return sum + (p ? Number(p.precioExtra) || 0 : 0);
+  }, 0);
+  const extras = extrasGuarniciones + extrasPlatos;
   const precioEfectivo = (gramajeActivo ? gramajeActivo.precio : producto.precio) + extras;
 
   const setSlot = (index, nombre) =>
@@ -67,9 +81,11 @@ export default function ProductoDetalle() {
 
   const handleAgregar = () => {
     const elegidas = tieneGuarniciones ? guarniciones.slice(0, cantidadViandas) : [];
-    addToCart(producto, Math.min(cantidad, producto.stock), elegidas, precioEfectivo, gramajeActivo?.gramos ?? null);
+    const platosElegidos = esPackArmable ? platosPrincipales.slice(0, cantidadViandas) : [];
+    addToCart(producto, Math.min(cantidad, producto.stock), elegidas, precioEfectivo, gramajeActivo?.gramos ?? null, platosElegidos);
     setAgregado(true);
     setGuarniciones([]); // limpiar para poder elegir otra combinación
+    setPlatosPrincipales([]);
   };
 
   return (
@@ -102,7 +118,27 @@ export default function ProductoDetalle() {
               </div>
             )}
 
-            {tieneGuarniciones && !sinStock && (
+            {esPackArmable && !sinStock && (
+              <SeleccionMultiple
+                titulo="Plato principal"
+                opciones={opcionesPlatos}
+                seleccionadas={platosPrincipales}
+                max={cantidadViandas}
+                onChange={setPlatosPrincipales}
+              />
+            )}
+
+            {esPackArmable && tieneGuarniciones && !sinStock && (
+              <SeleccionMultiple
+                titulo="Guarniciones"
+                opciones={opciones}
+                seleccionadas={guarniciones}
+                max={cantidadViandas}
+                onChange={setGuarniciones}
+              />
+            )}
+
+            {!esPackArmable && tieneGuarniciones && !sinStock && (
               <GuarnicionPicker slots={cantidadViandas} opciones={opciones} value={guarniciones} onChange={setSlot} />
             )}
 
@@ -130,8 +166,25 @@ export default function ProductoDetalle() {
             >
               Agregar al carrito
             </button>
-            {tieneGuarniciones && !todasElegidas && !sinStock && (
-              <p className={styles.aviso}>Elegí {cantidadViandas > 1 ? "todas las guarniciones" : "una guarnición"} para continuar.</p>
+            {esPackArmable ? (
+              <>
+                {platosPrincipales.length !== cantidadViandas && !sinStock && (
+                  <p className={styles.aviso}>
+                    Elegí {cantidadViandas} plato{cantidadViandas > 1 ? "s" : ""} principal{cantidadViandas > 1 ? "es" : ""} para continuar.
+                  </p>
+                )}
+                {tieneGuarniciones && guarniciones.length !== cantidadViandas && !sinStock && (
+                  <p className={styles.aviso}>
+                    Elegí {cantidadViandas} guarnición{cantidadViandas > 1 ? "es" : ""} para continuar.
+                  </p>
+                )}
+              </>
+            ) : (
+              tieneGuarniciones &&
+              !todasElegidas &&
+              !sinStock && (
+                <p className={styles.aviso}>Elegí {cantidadViandas > 1 ? "todas las guarniciones" : "una guarnición"} para continuar.</p>
+              )
             )}
 
             {agregado && <p className={styles.confirmacion}>Agregado al carrito ✓</p>}
