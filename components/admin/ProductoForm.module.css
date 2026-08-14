@@ -121,3 +121,11 @@
   border-radius: 6px;
   object-fit: cover;
 }
+
+.varianteRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}

@@ -7,6 +7,7 @@ import { useCategorias } from "@/lib/useCategorias";
 import { updateDocById } from "@/lib/adminCrud";
 import { useGuarniciones } from "@/lib/useGuarniciones";
 import ImageUploadField from "./ImageUploadField";
+import shared from "./adminShared.module.css";
 import styles from "./ProductoForm.module.css";
 
 const EMPTY = {
@@ -22,6 +23,8 @@ const EMPTY = {
   tablaNutricional: { calorias: "", proteinas: "", carbohidratos: "", grasas: "" },
   activo: true,
   sinTacc: false,
+  gramajeBase: "",
+  variantesGramaje: [],
 };
 
 export default function ProductoForm({ producto, onDone }) {
@@ -48,6 +51,22 @@ export default function ProductoForm({ producto, onDone }) {
         : [...seleccionadas, id];
       return { ...prev, guarniciones };
     });
+  const updateVariante = (index, field, value) =>
+    setDraft((prev) => {
+      const variantesGramaje = [...(prev.variantesGramaje || [])];
+      variantesGramaje[index] = { ...variantesGramaje[index], [field]: value };
+      return { ...prev, variantesGramaje };
+    });
+  const removeVariante = (index) =>
+    setDraft((prev) => ({
+      ...prev,
+      variantesGramaje: (prev.variantesGramaje || []).filter((_, i) => i !== index),
+    }));
+  const addVariante = () =>
+    setDraft((prev) => ({
+      ...prev,
+      variantesGramaje: [...(prev.variantesGramaje || []), { gramos: 0, precio: 0 }],
+    }));
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -59,6 +78,11 @@ export default function ProductoForm({ producto, onDone }) {
       cantidadViandas: Math.max(1, Number(draft.cantidadViandas) || 1),
       guarniciones: draft.guarniciones || [],
       imagenUrls: draft.imagenUrls.filter(Boolean),
+      gramajeBase: Number(draft.gramajeBase) || 0,
+      variantesGramaje: (draft.variantesGramaje || []).map((v) => ({
+        gramos: Number(v.gramos) || 0,
+        precio: Number(v.precio) || 0,
+      })),
     };
     try {
       if (isEditing) {
@@ -204,6 +228,54 @@ export default function ProductoForm({ producto, onDone }) {
               ))}
           </div>
         )}
+      </div>
+
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Gramaje (opcional)</p>
+        <p style={{ marginBottom: "0.8rem", opacity: 0.7, fontSize: "0.9rem" }}>
+          Si cargás variantes de peso, el precio de arriba se toma como el gramaje base indicado acá. El cliente
+          va a poder elegir entre estas opciones en la ficha del producto.
+        </p>
+        <div className={styles.field} style={{ maxWidth: 200, marginBottom: "0.8rem" }}>
+          <label htmlFor="producto-gramaje-base">Gramaje base (gramos)</label>
+          <input
+            id="producto-gramaje-base"
+            type="number"
+            min={0}
+            value={draft.gramajeBase}
+            onChange={(e) => updateField("gramajeBase", e.target.value)}
+          />
+        </div>
+        {(draft.variantesGramaje || []).map((variante, index) => (
+          <div key={index} className={styles.varianteRow}>
+            <div className={styles.field} style={{ maxWidth: 140 }}>
+              <label htmlFor={`variante-gramos-${index}`}>Gramos</label>
+              <input
+                id={`variante-gramos-${index}`}
+                type="number"
+                min={0}
+                value={variante.gramos}
+                onChange={(e) => updateVariante(index, "gramos", e.target.value)}
+              />
+            </div>
+            <div className={styles.field} style={{ maxWidth: 140 }}>
+              <label htmlFor={`variante-precio-${index}`}>Precio</label>
+              <input
+                id={`variante-precio-${index}`}
+                type="number"
+                min={0}
+                value={variante.precio}
+                onChange={(e) => updateVariante(index, "precio", e.target.value)}
+              />
+            </div>
+            <button type="button" className={shared.delete} onClick={() => removeVariante(index)}>
+              Eliminar
+            </button>
+          </div>
+        ))}
+        <button type="button" className={shared.addButton} onClick={addVariante}>
+          + Agregar variante de gramaje
+        </button>
       </div>
 
       <div className={styles.section}>
