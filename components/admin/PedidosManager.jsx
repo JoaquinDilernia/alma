@@ -5,6 +5,7 @@ import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { updateDocById } from "@/lib/adminCrud";
 import StatusBadge, { ESTADO_LABELS } from "./StatusBadge";
+import { formatGramos } from "@/lib/gramaje";
 import styles from "./PedidosManager.module.css";
 import shared from "./adminShared.module.css";
 
@@ -91,7 +92,9 @@ export default function PedidosManager() {
                     </p>
                     <p>
                       <strong>Ítems:</strong>{" "}
-                      {pedido.items?.map((item) => `${item.cantidad}× ${item.nombre}`).join(", ")}
+                      {pedido.items
+                        ?.map((item) => `${item.cantidad}× ${item.nombre}${item.gramos ? ` (${formatGramos(item.gramos)})` : ""}`)
+                        .join(", ")}
                     </p>
                     <p>
                       <strong>Subtotal:</strong> ${pedido.subtotal}

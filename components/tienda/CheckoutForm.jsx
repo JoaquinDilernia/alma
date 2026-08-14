@@ -10,6 +10,7 @@ import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import { validateCheckoutForm, calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
 import { submitOrder } from "@/lib/submitOrder";
 import { buildOrderEmailParams, sendOrderConfirmationEmail } from "@/lib/emailNotifications";
+import { formatGramos } from "@/lib/gramaje";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CheckoutForm.module.css";
 
@@ -202,10 +203,11 @@ export default function CheckoutForm() {
       <div className={styles.resumen}>
         <h2 style={{ marginBottom: "1rem" }}>Resumen</h2>
         {cart.map((item) => (
-          <div key={`${item.productoId}::${(item.guarniciones || []).join("|")}`} className={styles.resumenRow}>
+          <div key={`${item.productoId}::${item.gramos || ""}::${(item.guarniciones || []).join("|")}`} className={styles.resumenRow}>
             <span>
               {item.cantidad}× {item.nombre}
-              {(item.guarniciones || []).length > 0 ? ` (${item.guarniciones.join(", ")})` : ""}
+              {item.gramos ? ` (${formatGramos(item.gramos)})` : ""}
+              {(item.guarniciones || []).length > 0 ? ` — ${item.guarniciones.join(", ")}` : ""}
             </span>
             <span>${item.precio * item.cantidad}</span>
           </div>

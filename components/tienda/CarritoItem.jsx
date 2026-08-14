@@ -2,6 +2,7 @@
 
 import { useCart } from "@/lib/CartProvider";
 import { cartLineId } from "@/lib/cart";
+import { formatGramos } from "@/lib/gramaje";
 import styles from "./CarritoItem.module.css";
 
 export default function CarritoItem({ item }) {
@@ -13,6 +14,7 @@ export default function CarritoItem({ item }) {
     <div className={styles.row}>
       <div className={styles.info}>
         <span className={styles.nombre}>{item.nombre}</span>
+        {item.gramos && <span className={styles.guarniciones}>{formatGramos(item.gramos)}</span>}
         {guarniciones.length > 0 && <span className={styles.guarniciones}>{guarniciones.join(", ")}</span>}
       </div>
       <span>${item.precio}</span>
