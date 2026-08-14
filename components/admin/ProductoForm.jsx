@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { useCategorias } from "@/lib/useCategorias";
 import { updateDocById } from "@/lib/adminCrud";
 import { useGuarniciones } from "@/lib/useGuarniciones";
+import { usePlatosPrincipales } from "@/lib/usePlatosPrincipales";
 import ImageUploadField from "./ImageUploadField";
 import shared from "./adminShared.module.css";
 import styles from "./ProductoForm.module.css";
@@ -25,11 +26,13 @@ const EMPTY = {
   sinTacc: false,
   gramajeBase: "",
   variantesGramaje: [],
+  platosPrincipales: [],
 };
 
 export default function ProductoForm({ producto, onDone }) {
   const { categorias } = useCategorias();
   const { guarniciones: guarnicionesDisponibles } = useGuarniciones();
+  const { platosPrincipales: platosDisponibles } = usePlatosPrincipales();
   const [draft, setDraft] = useState(producto ? { ...EMPTY, ...producto } : EMPTY);
   const [saving, setSaving] = useState(false);
   const isEditing = Boolean(producto);
@@ -50,6 +53,14 @@ export default function ProductoForm({ producto, onDone }) {
         ? seleccionadas.filter((g) => g !== id)
         : [...seleccionadas, id];
       return { ...prev, guarniciones };
+    });
+  const togglePlatoPrincipal = (id) =>
+    setDraft((prev) => {
+      const seleccionados = prev.platosPrincipales || [];
+      const platosPrincipales = seleccionados.includes(id)
+        ? seleccionados.filter((p) => p !== id)
+        : [...seleccionados, id];
+      return { ...prev, platosPrincipales };
     });
   const updateVariante = (index, field, value) =>
     setDraft((prev) => {
@@ -83,6 +94,7 @@ export default function ProductoForm({ producto, onDone }) {
         gramos: Number(v.gramos) || 0,
         precio: Number(v.precio) || 0,
       })),
+      platosPrincipales: draft.platosPrincipales || [],
     };
     try {
       if (isEditing) {
@@ -223,6 +235,41 @@ export default function ProductoForm({ producto, onDone }) {
                   <span>
                     {g.nombre}
                     {g.precioExtra > 0 ? ` (+$${g.precioExtra})` : ""}
+                  </span>
+                </label>
+              ))}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.section}>
+        <p className={styles.sectionTitle}>Platos principales (para packs armables)</p>
+        <p style={{ marginBottom: "0.8rem", opacity: 0.7, fontSize: "0.9rem" }}>
+          Si cargás al menos un plato acá, este producto pasa a ser un "pack armable": el cliente va a poder
+          elegir el plato principal de cada vianda además de la guarnición, en vez de tener uno fijo.
+        </p>
+        {platosDisponibles.filter((p) => p.activa).length === 0 ? (
+          <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>
+            Todavía no hay platos principales cargados. Creálos en la sección "Platos principales" del menú.
+          </p>
+        ) : (
+          <div className={styles.guarnicionesCheckboxes}>
+            {platosDisponibles
+              .filter((p) => p.activa)
+              .map((p) => (
+                <label key={p.id} className={styles.guarnicionCheckbox}>
+                  <input
+                    type="checkbox"
+                    checked={(draft.platosPrincipales || []).includes(p.id)}
+                    onChange={() => togglePlatoPrincipal(p.id)}
+                  />
+                  {p.imagenUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.imagenUrl} alt="" className={styles.guarnicionThumb} />
+                  )}
+                  <span>
+                    {p.nombre}
+                    {p.precioExtra > 0 ? ` (+$${p.precioExtra})` : ""}
                   </span>
                 </label>
               ))}
