@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/CartProvider";
+import { cartLineId } from "@/lib/cart";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useMetodosPago } from "@/lib/useMetodosPago";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
@@ -167,7 +168,7 @@ export default function CheckoutForm() {
             <option value="">Seleccioná una zona</option>
             {zonasActivas.map((zona) => (
               <option key={zona.id} value={zona.id}>
-                {zona.nombre} — ${zona.costo}
+                {zona.nombre} — {envioGratisAplica ? "Gratis" : `$${zona.costo}`}
               </option>
             ))}
           </select>
@@ -203,7 +204,7 @@ export default function CheckoutForm() {
       <div className={styles.resumen}>
         <h2 style={{ marginBottom: "1rem" }}>Resumen</h2>
         {cart.map((item) => (
-          <div key={`${item.productoId}::${item.gramos || ""}::${(item.guarniciones || []).join("|")}`} className={styles.resumenRow}>
+          <div key={cartLineId(item)} className={styles.resumenRow}>
             <span>
               {item.cantidad}× {item.nombre}
               {item.gramos ? ` (${formatGramos(item.gramos)})` : ""}

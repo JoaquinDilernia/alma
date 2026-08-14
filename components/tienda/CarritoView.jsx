@@ -6,6 +6,7 @@ import { useCart } from "@/lib/CartProvider";
 import { useZonasEnvio } from "@/lib/useZonasEnvio";
 import { useTiendaConfig } from "@/lib/useTiendaConfig";
 import { calculateTotal, calculateDiscount, validateMinimoViandas, resolveEnvioGratis, resolveDescuentoCantidad } from "@/lib/checkout";
+import { cartLineId } from "@/lib/cart";
 import CarritoItem from "./CarritoItem";
 import RepartoInfo from "./RepartoInfo";
 import styles from "./CarritoView.module.css";
@@ -83,7 +84,7 @@ export default function CarritoView() {
       )}
 
       {cart.map((item) => (
-        <CarritoItem key={`${item.productoId}::${(item.guarniciones || []).join("|")}`} item={item} />
+        <CarritoItem key={cartLineId(item)} item={item} />
       ))}
 
       <div className={styles.zona}>
@@ -94,7 +95,7 @@ export default function CarritoView() {
           <select id="zona-envio" value={zonaId} onChange={(e) => setZonaId(e.target.value)}>
             {zonasActivas.map((zona) => (
               <option key={zona.id} value={zona.id}>
-                {zona.nombre} — ${zona.costo}
+                {zona.nombre} — {envioGratisAplica ? "Gratis" : `$${zona.costo}`}
               </option>
             ))}
           </select>
