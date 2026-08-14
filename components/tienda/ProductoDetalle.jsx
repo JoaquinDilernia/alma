@@ -11,6 +11,7 @@ import GaleriaFotos from "./GaleriaFotos";
 import TablaNutricional from "./TablaNutricional";
 import RepartoInfo from "./RepartoInfo";
 import GuarnicionPicker from "./GuarnicionPicker";
+import { resolveOpcionesGramaje, formatGramos } from "@/lib/gramaje";
 import styles from "./ProductoDetalle.module.css";
 
 export default function ProductoDetalle() {
@@ -23,6 +24,7 @@ export default function ProductoDetalle() {
   const [cantidad, setCantidad] = useState(1);
   const [guarniciones, setGuarniciones] = useState([]);
   const [agregado, setAgregado] = useState(false);
+  const [gramajeSeleccionado, setGramajeSeleccionado] = useState(null);
 
   if (loading) return <p style={{ padding: "4rem 0", textAlign: "center" }}>Cargando…</p>;
 
@@ -45,6 +47,8 @@ export default function ProductoDetalle() {
   const opciones = catalogoGuarniciones.filter((g) => g.activa && idsGuarniciones.includes(g.id));
   const tieneGuarniciones = opciones.length > 0;
   const cantidadViandas = producto.cantidadViandas || 1;
+  const opcionesGramaje = resolveOpcionesGramaje(producto);
+  const gramajeActivo = gramajeSeleccionado || opcionesGramaje[0] || null;
 
   const todasElegidas = !tieneGuarniciones || (guarniciones.length === cantidadViandas && guarniciones.every(Boolean));
 
@@ -52,7 +56,7 @@ export default function ProductoDetalle() {
     const g = opciones.find((o) => o.nombre === nombre);
     return sum + (g ? Number(g.precioExtra) || 0 : 0);
   }, 0);
-  const precioEfectivo = producto.precio + extras;
+  const precioEfectivo = (gramajeActivo ? gramajeActivo.precio : producto.precio) + extras;
 
   const setSlot = (index, nombre) =>
     setGuarniciones((prev) => {
@@ -63,7 +67,7 @@ export default function ProductoDetalle() {
 
   const handleAgregar = () => {
     const elegidas = tieneGuarniciones ? guarniciones.slice(0, cantidadViandas) : [];
-    addToCart(producto, Math.min(cantidad, producto.stock), elegidas, precioEfectivo);
+    addToCart(producto, Math.min(cantidad, producto.stock), elegidas, precioEfectivo, gramajeActivo?.gramos ?? null);
     setAgregado(true);
     setGuarniciones([]); // limpiar para poder elegir otra combinación
   };
@@ -81,6 +85,22 @@ export default function ProductoDetalle() {
             <h1>{producto.nombre}</h1>
             <p className={styles.precio}>${precioEfectivo}</p>
             <p className={styles.descripcion}>{producto.descripcion}</p>
+
+            {opcionesGramaje.length > 1 && (
+              <div className={styles.gramajeSelector}>
+                {opcionesGramaje.map((opcion) => (
+                  <button
+                    type="button"
+                    key={opcion.gramos}
+                    className={`${styles.gramajeCard} ${gramajeActivo?.gramos === opcion.gramos ? styles.gramajeCardActivo : ""}`}
+                    onClick={() => setGramajeSeleccionado(opcion)}
+                  >
+                    <span className={styles.gramajeLabel}>{formatGramos(opcion.gramos)}</span>
+                    <span className={styles.gramajePrecio}>${opcion.precio}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {tieneGuarniciones && !sinStock && (
               <GuarnicionPicker slots={cantidadViandas} opciones={opciones} value={guarniciones} onChange={setSlot} />
