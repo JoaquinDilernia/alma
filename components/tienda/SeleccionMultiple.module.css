@@ -1,0 +1,77 @@
+.contenedor {
+  margin-bottom: var(--space-md);
+}
+
+.titulo {
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.8rem;
+}
+
+.thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.thumbPlaceholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--color-beige);
+  flex-shrink: 0;
+}
+
+.nombre {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.extra {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepper button {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--color-beige);
+  background: var(--color-blanco);
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cantidad {
+  min-width: 1.2rem;
+  text-align: center;
+  font-weight: 600;
+}
