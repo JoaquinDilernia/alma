@@ -27,8 +27,8 @@ export function CartProvider({ children }) {
 
   const value = {
     cart,
-    addToCart: (producto, cantidad, guarniciones = [], precioEfectivo = producto.precio) =>
-      setCart((prev) => addItem(prev, producto, cantidad, guarniciones, precioEfectivo)),
+    addToCart: (producto, cantidad, guarniciones = [], precioEfectivo = producto.precio, gramos = null) =>
+      setCart((prev) => addItem(prev, producto, cantidad, guarniciones, precioEfectivo, gramos)),
     removeFromCart: (lineId) => setCart((prev) => removeItem(prev, lineId)),
     updateCartQuantity: (lineId, cantidad) => setCart((prev) => updateQuantity(prev, lineId, cantidad)),
     clearCart: () => setCart([]),
