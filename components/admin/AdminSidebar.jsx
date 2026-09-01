@@ -77,6 +77,13 @@ const ICONS = {
       <line x1="8" y1="16" x2="12" y2="16" />
     </svg>
   ),
+  empresas: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" />
+      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <line x1="2" y1="13" x2="22" y2="13" />
+    </svg>
+  ),
   usuarios: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="9" cy="8" r="3" />
@@ -110,6 +117,7 @@ const ICONS = {
 const NAV_ITEMS = [
   { href: "/admin", label: "Panel", icon: ICONS.panel },
   { href: "/admin/pedidos", label: "Pedidos", icon: ICONS.pedidos },
+  { href: "/admin/empresas", label: "Empresas", icon: ICONS.empresas },
   { href: "/admin/contenido", label: "Contenido", icon: ICONS.contenido },
   { href: "/admin/productos", label: "Productos", icon: ICONS.productos },
   { href: "/admin/categorias", label: "Categorías", icon: ICONS.categorias },

@@ -3,45 +3,79 @@
 import { useState } from "react";
 import { validateEmpresaLead } from "@/lib/validateEmpresaLead";
 import { submitEmpresaLead } from "@/lib/submitEmpresaLead";
+import {
+  MODALIDADES_EMPRESA,
+  FRECUENCIAS_EMPRESA,
+  buildEmpresaWhatsappHref,
+} from "@/lib/empresasLead";
 import styles from "./EmpresasForm.module.css";
 
-const INITIAL_DATA = { empresa: "", contacto: "", email: "", telefono: "", tamanioEquipo: "" };
+const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5491100000000";
+const INITIAL_DATA = {
+  empresa: "",
+  contacto: "",
+  email: "",
+  telefono: "",
+  cantidadPersonas: "",
+  frecuencia: "",
+  mensaje: "",
+};
 
-export default function EmpresasForm() {
+export default function EmpresasForm({ modalidad, onModalidadChange }) {
   const [data, setData] = useState(INITIAL_DATA);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+  const [status, setStatus] = useState("idle"); // idle | success
+  const [waHref, setWaHref] = useState("");
 
   const handleChange = (field) => (event) => {
     setData((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const { valid, errors: validationErrors } = validateEmpresaLead(data);
+    const full = { ...data, modalidad };
+    const { valid, errors: validationErrors } = validateEmpresaLead(full);
     setErrors(validationErrors);
     if (!valid) return;
 
-    setStatus("submitting");
-    try {
-      await submitEmpresaLead(data);
-      setStatus("success");
-      setData(INITIAL_DATA);
-    } catch (err) {
-      setStatus("error");
-    }
+    const href = buildEmpresaWhatsappHref(WHATSAPP, full);
+    setWaHref(href);
+    // Abrimos WhatsApp dentro del gesto del usuario para que no lo bloquee el navegador.
+    window.open(href, "_blank", "noopener");
+    setStatus("success");
+    setData(INITIAL_DATA);
+    // Guardamos una copia en Firestore como respaldo, sin bloquear la UX.
+    submitEmpresaLead(full).catch(() => {});
   };
 
   if (status === "success") {
     return (
-      <p className={styles.success}>
-        ¡Gracias! Ya recibimos tus datos, te vamos a contactar a la brevedad.
-      </p>
+      <div className={styles.success}>
+        <p>¡Listo! Te abrimos WhatsApp con tu consulta cargada.</p>
+        <p>
+          Si no se abrió,{" "}
+          <a href={waHref} target="_blank" rel="noreferrer" className={styles.successLink}>
+            tocá acá para enviarla
+          </a>
+          .
+        </p>
+      </div>
     );
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <div className={styles.field}>
+        <label htmlFor="modalidad">Modalidad</label>
+        <select id="modalidad" value={modalidad} onChange={(e) => onModalidadChange(e.target.value)}>
+          {MODALIDADES_EMPRESA.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
+          ))}
+        </select>
+        {errors.modalidad && <p className={styles.error}>{errors.modalidad}</p>}
+      </div>
       <div className={styles.field}>
         <label htmlFor="empresa">Empresa</label>
         <input id="empresa" value={data.empresa} onChange={handleChange("empresa")} placeholder="Nombre de tu empresa" />
@@ -63,22 +97,44 @@ export default function EmpresasForm() {
         {errors.telefono && <p className={styles.error}>{errors.telefono}</p>}
       </div>
       <div className={styles.field}>
-        <label htmlFor="tamanioEquipo">Tamaño aproximado del equipo</label>
-        <select id="tamanioEquipo" value={data.tamanioEquipo} onChange={handleChange("tamanioEquipo")}>
-          <option value="">Seleccioná una opción</option>
-          <option value="1-10">1 a 10 personas</option>
-          <option value="10-50">10 a 50 personas</option>
-          <option value="50+">Más de 50 personas</option>
-        </select>
+        <label htmlFor="cantidadPersonas">Cantidad de personas</label>
+        <input
+          id="cantidadPersonas"
+          type="number"
+          min="1"
+          inputMode="numeric"
+          value={data.cantidadPersonas}
+          onChange={handleChange("cantidadPersonas")}
+          placeholder="Ej: 25"
+        />
+        {errors.cantidadPersonas && <p className={styles.error}>{errors.cantidadPersonas}</p>}
       </div>
-      <button type="submit" className={styles.submit} disabled={status === "submitting"}>
-        {status === "submitting" ? "Enviando..." : "Quiero sumar mi empresa"}
+      <div className={styles.field}>
+        <label htmlFor="frecuencia">Frecuencia del servicio</label>
+        <select id="frecuencia" value={data.frecuencia} onChange={handleChange("frecuencia")}>
+          <option value="">Seleccioná una opción</option>
+          {FRECUENCIAS_EMPRESA.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+        </select>
+        {errors.frecuencia && <p className={styles.error}>{errors.frecuencia}</p>}
+      </div>
+      <div className={styles.field}>
+        <label htmlFor="mensaje">Contanos qué necesitás</label>
+        <textarea
+          id="mensaje"
+          className={styles.textarea}
+          value={data.mensaje}
+          onChange={handleChange("mensaje")}
+          rows={3}
+          placeholder="Cantidad de almuerzos, días de la semana, restricciones alimentarias, etc."
+        />
+      </div>
+      <button type="submit" className={styles.submit}>
+        Enviar consulta por WhatsApp
       </button>
-      {status === "error" && (
-        <p className={styles.formError}>
-          No pudimos enviar tu consulta. Revisá tu conexión e intentá de nuevo.
-        </p>
-      )}
     </form>
   );
 }
