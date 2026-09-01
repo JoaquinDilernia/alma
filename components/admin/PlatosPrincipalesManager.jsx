@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { usePlatosPrincipales } from "@/lib/usePlatosPrincipales";
 import { createDoc, updateDocById, deleteDocById } from "@/lib/adminCrud";
-import ImageUploadField from "./ImageUploadField";
 import shared from "./adminShared.module.css";
 import styles from "./PlatosPrincipalesManager.module.css";
 
@@ -51,12 +50,14 @@ export default function PlatosPrincipalesManager() {
       <div className={styles.list}>
         {platosPrincipales.map((plato) => (
           <div key={plato.id} className={styles.card}>
-            <ImageUploadField
-              label="Foto"
-              currentUrl={plato.imagenUrl}
-              storagePath={`platos-principales/${plato.id}.jpg`}
-              onUploaded={(url) => handleFieldChange(plato, "imagenUrl", url)}
-            />
+            {plato.imagenUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={plato.imagenUrl}
+                alt=""
+                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8 }}
+              />
+            )}
             <div className={styles.cardFields}>
               <div className={shared.field}>
                 <label htmlFor={`nombre-${plato.id}`}>Nombre</label>

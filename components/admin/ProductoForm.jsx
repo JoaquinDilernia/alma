@@ -7,7 +7,6 @@ import { useCategorias } from "@/lib/useCategorias";
 import { updateDocById } from "@/lib/adminCrud";
 import { useGuarniciones } from "@/lib/useGuarniciones";
 import { usePlatosPrincipales } from "@/lib/usePlatosPrincipales";
-import ImageUploadField from "./ImageUploadField";
 import shared from "./adminShared.module.css";
 import styles from "./ProductoForm.module.css";
 
@@ -20,7 +19,6 @@ const EMPTY = {
   stock: 0,
   cantidadViandas: 1,
   guarniciones: [],
-  imagenUrls: ["", "", ""],
   tablaNutricional: { calorias: "", proteinas: "", carbohidratos: "", grasas: "" },
   activo: true,
   sinTacc: false,
@@ -40,12 +38,6 @@ export default function ProductoForm({ producto, onDone }) {
   const updateField = (field, value) => setDraft((prev) => ({ ...prev, [field]: value }));
   const updateNutricion = (field, value) =>
     setDraft((prev) => ({ ...prev, tablaNutricional: { ...prev.tablaNutricional, [field]: value } }));
-  const updateFoto = (index, url) =>
-    setDraft((prev) => {
-      const imagenUrls = [...prev.imagenUrls];
-      imagenUrls[index] = url;
-      return { ...prev, imagenUrls };
-    });
   const toggleGuarnicion = (id) =>
     setDraft((prev) => {
       const seleccionadas = prev.guarniciones || [];
@@ -88,7 +80,6 @@ export default function ProductoForm({ producto, onDone }) {
       stock: Number(draft.stock) || 0,
       cantidadViandas: Math.max(1, Number(draft.cantidadViandas) || 1),
       guarniciones: draft.guarniciones || [],
-      imagenUrls: draft.imagenUrls.filter(Boolean),
       gramajeBase: Number(draft.gramajeBase) || 0,
       variantesGramaje: (draft.variantesGramaje || []).map((v) => ({
         gramos: Number(v.gramos) || 0,
@@ -194,18 +185,11 @@ export default function ProductoForm({ producto, onDone }) {
       </div>
 
       <div className={styles.section}>
-        <p className={styles.sectionTitle}>Fotos</p>
-        <div className={styles.fotos}>
-          {[0, 1, 2].map((index) => (
-            <ImageUploadField
-              key={index}
-              label={`Foto ${index + 1}`}
-              currentUrl={draft.imagenUrls[index]}
-              storagePath={`productos/${draft.nombre || "nuevo"}-${index}.jpg`}
-              onUploaded={(url) => updateFoto(index, url)}
-            />
-          ))}
-        </div>
+        <p className={styles.sectionTitle}>Foto</p>
+        <p style={{ opacity: 0.7, fontSize: "0.9rem" }}>
+          Las fotos de producto se cargan por código (no desde el panel) para no generar
+          costos de Storage. Pasale la imagen al desarrollador junto con el nombre del producto.
+        </p>
       </div>
 
       <div className={styles.section}>

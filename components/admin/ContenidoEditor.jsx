@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSiteContent } from "@/lib/useSiteContent";
 import { saveSiteContentField } from "@/lib/saveSiteContentField";
-import ImageUploadField from "./ImageUploadField";
 import TestimoniosManager from "./TestimoniosManager";
 import FaqManager from "./FaqManager";
 import styles from "./ContenidoEditor.module.css";
@@ -61,12 +60,10 @@ export default function ContenidoEditor() {
             onChange={(e) => setDraft((p) => ({ ...p, hero: { ...p.hero, bajada: e.target.value } }))}
           />
         </div>
-        <ImageUploadField
-          label="Imagen de fondo"
-          currentUrl={draft.hero.imagenUrl}
-          storagePath="hero.jpg"
-          onUploaded={(url) => setDraft((p) => ({ ...p, hero: { ...p.hero, imagenUrl: url } }))}
-        />
+        <p className={styles.field} style={{ opacity: 0.7, fontSize: "0.9rem" }}>
+          Las imágenes (fondo del hero y categorías) se cargan por código para no generar
+          costos de Storage. Pedíselas al desarrollador.
+        </p>
       </section>
 
       <section className={styles.block}>
@@ -103,12 +100,6 @@ export default function ContenidoEditor() {
                 onChange={(e) => updateCategoria(index, { nombre: e.target.value })}
               />
             </div>
-            <ImageUploadField
-              label="Imagen"
-              currentUrl={categoria.imagenUrl}
-              storagePath={`categorias/${index}.jpg`}
-              onUploaded={(url) => updateCategoria(index, { imagenUrl: url })}
-            />
           </div>
         ))}
       </section>

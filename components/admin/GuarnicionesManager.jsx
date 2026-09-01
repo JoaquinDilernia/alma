@@ -6,7 +6,6 @@ import { db } from "@/lib/firebase";
 import { useGuarniciones } from "@/lib/useGuarniciones";
 import { createDoc, updateDocById, deleteDocById } from "@/lib/adminCrud";
 import { collectGuarnicionesUnicas, remapProductoGuarniciones, normalizeNombre } from "@/lib/migrateGuarniciones";
-import ImageUploadField from "./ImageUploadField";
 import shared from "./adminShared.module.css";
 import styles from "./GuarnicionesManager.module.css";
 
@@ -98,12 +97,14 @@ export default function GuarnicionesManager() {
       <div className={styles.list}>
         {guarniciones.map((guarnicion) => (
           <div key={guarnicion.id} className={styles.card}>
-            <ImageUploadField
-              label="Foto"
-              currentUrl={guarnicion.imagenUrl}
-              storagePath={`guarniciones/${guarnicion.id}.jpg`}
-              onUploaded={(url) => handleFieldChange(guarnicion, "imagenUrl", url)}
-            />
+            {guarnicion.imagenUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={guarnicion.imagenUrl}
+                alt=""
+                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8 }}
+              />
+            )}
             <div className={styles.cardFields}>
               <div className={shared.field}>
                 <label htmlFor={`nombre-${guarnicion.id}`}>Nombre</label>
