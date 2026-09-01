@@ -2,7 +2,7 @@
 
 import { useSiteContent } from "@/lib/useSiteContent";
 
-const SITE_URL = "https://alma.techdi.com.ar";
+const SITE_URL = "https://alma-servicios.com";
 
 export default function StructuredData() {
   const content = useSiteContent();

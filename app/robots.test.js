@@ -9,6 +9,6 @@ describe("robots", () => {
 
   it("points to the production sitemap", () => {
     const result = robots();
-    expect(result.sitemap).toBe("https://alma.techdi.com.ar/sitemap.xml");
+    expect(result.sitemap).toBe("https://alma-servicios.com/sitemap.xml");
   });
 });

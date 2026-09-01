@@ -1,6 +1,6 @@
 export default function robots() {
   return {
     rules: { userAgent: "*", allow: "/", disallow: "/admin" },
-    sitemap: "https://alma.techdi.com.ar/sitemap.xml",
+    sitemap: "https://alma-servicios.com/sitemap.xml",
   };
 }

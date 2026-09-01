@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://alma.techdi.com.ar"),
+  metadataBase: new URL("https://alma-servicios.com"),
   title: {
     default: "ALMA — Viandas saludables 100% caseras",
     template: "%s | ALMA",
